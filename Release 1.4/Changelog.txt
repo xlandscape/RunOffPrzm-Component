@@ -1,0 +1,84 @@
+Version 1.01
+Application rates in PPM-Calendar are now expexted in [g/ha] instead of [kg/ha]
+In the output grids, exposure in [g/ha] are given instead of [mg/cell]
+
+Version 1.02
+Negative exposure values on the treated field eliminated
+
+Version 1.03
+Reporting threashold for runoff exposure may now be changed in Configuration.xml in the section parameters/options/reporting_threashold
+DT50 values are now takes as DT50 [d] and not as rates [1/d]
+SoilDT50 was not used as described in the XML file in the previous version but only a default value.
+
+Version 1.04
+FieldsGrid and FlowGrid are compared after reading. If they do not match, an error is thrown.
+Temporary Grids are now also compressed using DFLATE.
+Grids at days without Runoff are not written any more.
+When the RunOff Module finished sucessfully, a file "successful.txt" ist written into the output folder.
+The temporary output path gets an subfolder named by the ProcessID of the current process. Please note: If the path where PRZM runs is more than 45 characters (inclusive "\"), PRZM crashes.
+
+Version 1.05
+KD is now used correctly.
+
+Version 1.06
+Application dates are sorted before written to PRZM inp file.
+Temporary PRZM Folder is used without the ProcessID again.
+
+Version 1.1
+The module has been splitted into two executibles. PRZM_Runoff.exe calculates the generation of Runoff using PRZM for every field. HydroFilter_Runoff.exe distributes the runoff in the landscape and hence calculates exposure.
+
+Version 1.2
+Runoff can also be calculated according to Step2. Therefore new nodes are available in RunOff_Configuration.xml.
+
+Version 1.21
+Some Bug fixes
+
+Version 1.22
+Some Bug fixes
+
+version 1.24
+some Bug fixes
+
+version 1.25
+Delete unused output grids
+
+version 1.26
+Fixed the bug that erosion and water runoff is inverted
+Changed the reporting threashold for consistent results
+
+version 1.3
+Integrated an Application pattern to each application event to simulate spray buffers
+Excluded the merging of all field results to one landscape grid per day.
+
+version 1.31
+runoff grid is now compressed (as all other grid are)
+Using the flat <delete_all_interim_results> in the main xml file it can be decided that all files in the output folder (except *.tif-files) are deleted as soon as they are not necessary any more.
+
+
+version 1.32
+Bugfix that some applications were not used by the landscape model.
+
+version 1.33
+Field grid and Flow grid are now correctly aligned.
+Exposure on the field is now completely avoided.
+
+version 1.4
+VFS_mod lookup tables are supported
+New implementation of a reduced version of PRZM in the hydrofilter runoff module
+
+version 1.41
+Bugfixes memory allocation
+
+version 1.42
+More output for debugging
+
+version 1.43
+Bugfixes memory and runoff flux
+Speed improvements
+
+version 1.44
+An error which caused very small exposure values (<10E-40) for cells which should have zero exposure
+Minor bug fixes
+
+version 1.45
+An error which caused an crash of the programm when VFSMod lookup tables were used was fixed.

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CroppingStatistic>
+	<Cropping>
+		<Field>617</Field>
+		<DateFrom>1900-01-01</DateFrom>
+		<DateTo>2100-01-01</DateTo>
+		<Crop>Cereals,Winter</Crop>
+		</Cropping><Cropping>
+		<Field>819</Field>
+		<DateFrom>1900-01-01</DateFrom>
+		<DateTo>2100-01-01</DateTo>
+		<Crop>Cereals,Winter</Crop>
+	</Cropping>
+</CroppingStatistic>
