@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<fields>
+	<field id="617">
+		<slope>3</slope>
+		<soil_horizons>
+			<soil_horizon id="1">
+				<thickness>30</thickness>
+				<BD>1.35</BD>
+				<omc>1.2</omc>
+				<sand>5</sand>
+				<silt>82</silt>
+			</soil_horizon>
+			<soil_horizon id="2">
+				<thickness>30</thickness>
+				<BD>1.45</BD>
+				<omc>0.3</omc>
+				<sand>6</sand>
+				<silt>83</silt>
+			</soil_horizon>
+			<soil_horizon id="3">
+				<thickness>40</thickness>
+				<BD>1.48</BD>
+				<omc>0.1</omc>
+				<sand>5</sand>
+				<silt>84</silt>
+			</soil_horizon>
+		</soil_horizons>
+	</field>
+	<field id="819">
+		<slope>3</slope>
+		<soil_horizons>
+			<soil_horizon id="1">
+				<thickness>30</thickness>
+				<BD>1.35</BD>
+				<omc>1.2</omc>
+				<sand>5</sand>
+				<silt>82</silt>
+			</soil_horizon>
+			<soil_horizon id="2">
+				<thickness>30</thickness>
+				<BD>1.45</BD>
+				<omc>0.3</omc>
+				<sand>6</sand>
+				<silt>83</silt>
+			</soil_horizon>
+			<soil_horizon id="3">
+				<thickness>40</thickness>
+				<BD>1.48</BD>
+				<omc>0.1</omc>
+				<sand>5</sand>
+				<silt>84</silt>
+			</soil_horizon>
+		</soil_horizons>
+	</field>
+</fields>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PppRepository>
+  <PPP>
+    <Name>Test PPP 1</Name>
+    <ActiveIngredients>
+      <ActiveIngredient>
+        <Name>Test a.i. 1</Name>
+        <MassFraction>1</MassFraction>
+      </ActiveIngredient> 
+    </ActiveIngredients>
+  </PPP>
+</PppRepository>

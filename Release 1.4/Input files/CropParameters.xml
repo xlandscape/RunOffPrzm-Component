@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<crops>
+  <crop name= "Cereals,Winter">
+    <!--The following factors are crop specific and are the same in every focus scenario (no effect of region) -->
+    <pan_evap_factor>0.84</pan_evap_factor>
+    <canopy_interception>0.15</canopy_interception>
+    <maximum_coverage>90</maximum_coverage>
+    <maximum_height>110</maximum_height>
+    <maximum_rooting_depth>130</maximum_rooting_depth>
+    <USLEC_fallow>0.9</USLEC_fallow>
+    <USLEC_cropping>0.2</USLEC_cropping>
+    <USLEC_residue>0.4</USLEC_residue>
+
+    <!--The following factors are crop and region specific -->
+    <emergence_date>12-11</emergence_date>
+    <maturation_date>10-06</maturation_date>
+    <harvest_date>31-07</harvest_date>
+    <fallow_date>01-11</fallow_date>
+	<!--Insert the mitigation parameters for water and sediment mitigation. This factor will be used in an exponential decay function to calculate the runoff reduction from cell to cell. Hence they should be calibrated to the cell size of the output grid-->
+	<water_mitigation>0</water_mitigation>
+	<sediment_mitigation>0</sediment_mitigation>
+	<!--Inset the path to the vfsmod lookup table file *.csv. If no filter should apply to a crop, use "none".-->
+	<VFS_Mod_lookup_table>none</VFS_Mod_lookup_table>
+  </crop>
+  <crop name="OffCrop">
+	<!--Insert the mitigation parameters for water and sediment mitigation. This factor will be used in an exponential decay function to calculate the runoff reduction from cell to cell. Hence they should be calibrated to the cell size of the output grid-->
+	<water_mitigation>-0.086</water_mitigation>
+	<sediment_mitigation>-0.153</sediment_mitigation>
+	<!--Inset the path to the vfsmod lookup table file *.csv. If no filter should apply to a crop, use "none".-->
+	<VFS_Mod_lookup_table>D:\delivery\Example_lookup_table.csv</VFS_Mod_lookup_table>
+  </crop>
+</crops>

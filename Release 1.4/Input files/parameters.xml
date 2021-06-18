@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<parameters>
+	<model>
+		<adsorption_method>2</adsorption_method>
+		<soil_temperature_simulation>2</soil_temperature_simulation>
+	</model>
+	<substances>
+		<substance name="Lindan">
+		<plant_uptake_factor>0</plant_uptake_factor>
+		<pesticide_dissipation_rate_of_foliage>10</pesticide_dissipation_rate_of_foliage>
+		<foliar_wash_off_coefficient>0.5</foliar_wash_off_coefficient>
+		<henry_constant>0.03</henry_constant>
+		<vapour_pressure>0.0001</vapour_pressure>
+		<molecular_weight>304</molecular_weight>
+		<water_solubility>60</water_solubility>
+		<temperature_at_which_measured>293</temperature_at_which_measured>
+		<freundlich_exponent>0.957</freundlich_exponent>
+		<reference_moisture_for_dt50_soil>100</reference_moisture_for_dt50_soil>
+		<soil_dt50>148</soil_dt50>
+		<koc_soil>477</koc_soil>
+	</substance>
+	</substances>
+	<ppp>
+		<ppp_repository>D:\delivery\PPP.xml</ppp_repository>
+	</ppp>
+	<cropping>
+		<cropping_calendar>D:\delivery\CroppingStatistics_PRZM.xml</cropping_calendar>
+		<ppm_calendar>D:\delivery\PPM_CALENDAR_PRZM.xml</ppm_calendar>
+		<chemical_application_methods>
+			<chemical_application_method name="SprayApplication">
+				<przm_application_method>2</przm_application_method>
+				<incorporation_depth>5</incorporation_depth>
+			</chemical_application_method>
+		</chemical_application_methods>
+		<crop_parameterisation>D:\delivery\CropParameters.xml</crop_parameterisation>
+	</cropping>
+	<landscape>
+		<field_discretisation>D:\delivery\Fields.tif</field_discretisation>
+		<parameters_as_xml>D:\delivery\field_parameterization.xml</parameters_as_xml>
+		<flow>D:\delivery\flow.tif</flow>
+	</landscape>
+	<weather>
+		<przm_weather_file>D:\delivery\focusprzm_weather.met</przm_weather_file>
+	</weather>
+	<options>
+		<start_date>1990-01-01</start_date>
+		<end_date>1999-12-31</end_date>
+		<temporary_output_path>D:\Temp</temporary_output_path>
+		<delete_temporary_grids>1</delete_temporary_grids>
+		<TimeoutSecPRZM>100</TimeoutSecPRZM>
+		<reporting_threashold>1</reporting_threashold>
+		<method_of_runoff_generation>1</method_of_runoff_generation>
+		<use_presimulated_przm_results>0</use_presimulated_przm_results>
+		<use_one_przm_model_per_grid_cell>0</use_one_przm_model_per_grid_cell> <!-- in 0, one przm model per field is used-->
+			<!--Isert 1 to use vfsmod lookup tables. These tables are crop specific and need to be icluded in the CropParameters XML file. If 0, FOCUS mitigation functions are used. These are also crop specific and need to be parameterised int he CropParameters XML-->
+		<use_vfs_mod>1</use_vfs_mod>
+		<delete_all_interim_results>1</delete_all_interim_results>
+		<show_exteded_error_infos>1</show_exteded_error_infos>
+	</options>
+</parameters>
