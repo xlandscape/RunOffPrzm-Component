@@ -18,6 +18,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.2", "2021-06-24"),
         base.VersionInfo("2.0.1", "2020-12-09"),
         base.VersionInfo("2.0.0", "2020-10-22"),
         base.VersionInfo("1.3.35", "2020-08-12"),
@@ -74,6 +75,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.0", "First independent release")
     VERSION.added("2.0.1", "Changelog and release history")
     VERSION.changed("2.0.1", "Module updated to PRZM Runoff v1.45")
+    VERSION.changed("2.0.2", "Updated data type access")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
