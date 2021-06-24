@@ -1,8 +1,6 @@
 """
 Class definition for the RunOffPrzm component.
 """
-# TODO.: module README, LICENSE, CHANGELOG, CONTRIBUTING
-# TODO.: README, LICENSE, CHANGELOG, CONTRIBUTING
 from osgeo import gdal, ogr, osr
 import datetime
 import glob
@@ -20,6 +18,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.2", "2021-06-24"),
         base.VersionInfo("2.0.1", "2020-12-09"),
         base.VersionInfo("2.0.0", "2020-10-22"),
         base.VersionInfo("1.3.35", "2020-08-12"),
@@ -76,6 +75,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.0", "First independent release")
     VERSION.added("2.0.1", "Changelog and release history")
     VERSION.changed("2.0.1", "Module updated to PRZM Runoff v1.45")
+    VERSION.changed("2.0.2", "Updated data type access")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
@@ -225,7 +225,7 @@ class RunOffPrzm(base.Component):
         self.outputs["Exposure"].set_values(
             np.ndarray,
             shape=(simulation_length, raster_cols, raster_rows),
-            dtype=np.float32,
+            data_type=np.float32,
             chunks=base.chunk_size((1, None, None), (simulation_length, raster_cols, raster_rows)),
             scales="time/day, space_x/1sqm, space_y/1sqm"
         )
