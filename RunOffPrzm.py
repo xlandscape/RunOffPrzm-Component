@@ -1,8 +1,6 @@
 """
 Class definition for the RunOffPrzm component.
 """
-# TODO.: module README, LICENSE, CHANGELOG, CONTRIBUTING
-# TODO.: README, LICENSE, CHANGELOG, CONTRIBUTING
 from osgeo import gdal, ogr, osr
 import datetime
 import glob
@@ -225,7 +223,7 @@ class RunOffPrzm(base.Component):
         self.outputs["Exposure"].set_values(
             np.ndarray,
             shape=(simulation_length, raster_cols, raster_rows),
-            dtype=np.float32,
+            data_type=np.float32,
             chunks=base.chunk_size((1, None, None), (simulation_length, raster_cols, raster_rows)),
             scales="time/day, space_x/1sqm, space_y/1sqm"
         )
