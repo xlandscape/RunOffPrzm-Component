@@ -18,6 +18,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.3", "2021-06-28"),
         base.VersionInfo("2.0.2", "2021-06-24"),
         base.VersionInfo("2.0.1", "2020-12-09"),
         base.VersionInfo("2.0.0", "2020-10-22"),
@@ -76,6 +77,7 @@ class RunOffPrzm(base.Component):
     VERSION.added("2.0.1", "Changelog and release history")
     VERSION.changed("2.0.1", "Module updated to PRZM Runoff v1.45")
     VERSION.changed("2.0.2", "Updated data type access")
+    VERSION.changed("2.0.3", "Crop parameterization added to component configuration")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
@@ -136,7 +138,22 @@ class RunOffPrzm(base.Component):
             base.Input("Options_UsePreSimulatedPrzmResults", (), self.default_observer),
             base.Input("Options_UseOnePrzmModelPerGridCell", (), self.default_observer),
             base.Input("Options_UseVfsMod", (), self.default_observer),
-            base.Input("CropParameters_VfsModLookupTable", (), self.default_observer)
+            base.Input("CropParameters_Crops", (attrib.Class("list[str]"),), self.default_observer),
+            base.Input("CropParameters_PanEvaporationFactors", (attrib.Class("list[float]"),), self.default_observer),
+            base.Input("CropParameters_CanopyIntersections", (attrib.Class("list[float]"),), self.default_observer),
+            base.Input("CropParameters_MaximumCoverages", (attrib.Class("list[int]"),), self.default_observer),
+            base.Input("CropParameters_MaximumHeights", (attrib.Class("list[int]"),), self.default_observer),
+            base.Input("CropParameters_MaximumRootingDepths", (attrib.Class("list[int]"),), self.default_observer),
+            base.Input("CropParameters_Fallows", (attrib.Class("list[float]"),), self.default_observer),
+            base.Input("CropParameters_Cropping", (attrib.Class("list[float]"),), self.default_observer),
+            base.Input("CropParameters_Residues", (attrib.Class("list[float]"),), self.default_observer),
+            base.Input("CropParameters_EmergenceDates", (attrib.Class("list[str]"),), self.default_observer),
+            base.Input("CropParameters_MaturationDates", (attrib.Class("list[str]"),), self.default_observer),
+            base.Input("CropParameters_HarvestDates", (attrib.Class("list[str]"),), self.default_observer),
+            base.Input("CropParameters_FallowDates", (attrib.Class("list[str]"),), self.default_observer),
+            base.Input("CropParameters_WaterMitigations", (attrib.Class("list[float]"),), self.default_observer),
+            base.Input("CropParameters_SedimentMitigations", (attrib.Class("list[float]"),), self.default_observer),
+            base.Input("CropParameters_VfsModLookupTables", (attrib.Class("list[str]"),), self.default_observer)
         ])
         self._outputs = base.OutputContainer(self, [base.Output("Exposure", store, self)])
         return
@@ -530,29 +547,39 @@ class RunOffPrzm(base.Component):
         :return: Nothing.
         """
         crops = xml.etree.ElementTree.Element("crops")
-        crop = xml.etree.ElementTree.SubElement(crops, "crop", {"name": "Cereals,Winter"})
-        # noinspection SpellCheckingInspection
-        xml.etree.ElementTree.SubElement(crop, "pan_evap_factor").text = "0.84"
-        xml.etree.ElementTree.SubElement(crop, "canopy_interception").text = "0.15"
-        xml.etree.ElementTree.SubElement(crop, "maximum_coverage").text = "90"
-        xml.etree.ElementTree.SubElement(crop, "maximum_height").text = "110"
-        xml.etree.ElementTree.SubElement(crop, "maximum_rooting_depth").text = "130"
-        xml.etree.ElementTree.SubElement(crop, "USLEC_fallow").text = "0.9"
-        xml.etree.ElementTree.SubElement(crop, "USLEC_cropping").text = "0.2"
-        xml.etree.ElementTree.SubElement(crop, "USLEC_residue").text = "0.4"
-        xml.etree.ElementTree.SubElement(crop, "emergence_date").text = "12-11"
-        xml.etree.ElementTree.SubElement(crop, "maturation_date").text = "10-06"
-        xml.etree.ElementTree.SubElement(crop, "harvest_date").text = "31-07"
-        xml.etree.ElementTree.SubElement(crop, "fallow_date").text = "01-11"
-        xml.etree.ElementTree.SubElement(crop, "water_mitigation").text = "0"
-        xml.etree.ElementTree.SubElement(crop, "sediment_mitigation").text = "0"
-        xml.etree.ElementTree.SubElement(crop, "VFS_Mod_lookup_table").text = "none"
-        crop = xml.etree.ElementTree.SubElement(crops, "crop", {"name": "OffCrop"})
-        xml.etree.ElementTree.SubElement(crop, "water_mitigation").text = "-0.086"
-        xml.etree.ElementTree.SubElement(crop, "sediment_mitigation").text = "-0.153"
-        xml.etree.ElementTree.SubElement(crop, "VFS_Mod_lookup_table").text = self.inputs[
-            "CropParameters_VfsModLookupTable"].read().values if self.inputs["Options_UseVfsMod"].read().values == "1" \
-            else "none"
+        pan_evaporation_factors = self.inputs["CropParameters_PanEvaporationFactors"].read().values
+        canopy_intersections = self.inputs["CropParameters_CanopyIntersections"].read().values
+        maximum_coverages = self.inputs["CropParameters_MaximumCoverages"].read().values
+        maximum_heights = self.inputs["CropParameters_MaximumHeights"].read().values
+        maximum_rooting_depths = self.inputs["CropParameters_MaximumRootingDepths"].read().values
+        fallows = self.inputs["CropParameters_Fallows"].read().values
+        cropping = self.inputs["CropParameters_Cropping"].read().values
+        residues = self.inputs["CropParameters_Residues"].read().values
+        emerging_dates = self.inputs["CropParameters_EmergenceDates"].read().values
+        maturation_dates = self.inputs["CropParameters_MaturationDates"].read().values
+        harvest_dates = self.inputs["CropParameters_HarvestDates"].read().values
+        fallow_dates = self.inputs["CropParameters_FallowDates"].read().values
+        water_mitigations = self.inputs["CropParameters_WaterMitigations"].read().values
+        sediment_mitigations = self.inputs["CropParameters_SedimentMitigations"].read().values
+        vfs_mod_lookup_tables = self.inputs["CropParameters_VfsModLookupTables"].read().values
+        for i, crop_name in enumerate(self.inputs["CropParameters_Crops"].read().values):
+            crop = xml.etree.ElementTree.SubElement(crops, "crop", {"name": crop_name})
+            # noinspection SpellCheckingInspection
+            xml.etree.ElementTree.SubElement(crop, "pan_evap_factor").text = str(pan_evaporation_factors[i])
+            xml.etree.ElementTree.SubElement(crop, "canopy_interception").text = str(canopy_intersections[i])
+            xml.etree.ElementTree.SubElement(crop, "maximum_coverage").text = str(maximum_coverages[i])
+            xml.etree.ElementTree.SubElement(crop, "maximum_height").text = str(maximum_heights[i])
+            xml.etree.ElementTree.SubElement(crop, "maximum_rooting_depth").text = str(maximum_rooting_depths[i])
+            xml.etree.ElementTree.SubElement(crop, "USLEC_fallow").text = str(fallows[i])
+            xml.etree.ElementTree.SubElement(crop, "USLEC_cropping").text = str(cropping[i])
+            xml.etree.ElementTree.SubElement(crop, "USLEC_residue").text = str(residues[i])
+            xml.etree.ElementTree.SubElement(crop, "emergence_date").text = emerging_dates[i]
+            xml.etree.ElementTree.SubElement(crop, "maturation_date").text = maturation_dates[i]
+            xml.etree.ElementTree.SubElement(crop, "harvest_date").text = harvest_dates[i]
+            xml.etree.ElementTree.SubElement(crop, "fallow_date").text = fallow_dates[i]
+            xml.etree.ElementTree.SubElement(crop, "water_mitigation").text = str(water_mitigations[i])
+            xml.etree.ElementTree.SubElement(crop, "sediment_mitigation").text = str(sediment_mitigations[i])
+            xml.etree.ElementTree.SubElement(crop, "VFS_Mod_lookup_table").text = vfs_mod_lookup_tables[i]
         xml.etree.ElementTree.ElementTree(crops).write(output_file, encoding="utf-8", xml_declaration=True)
         return
 
