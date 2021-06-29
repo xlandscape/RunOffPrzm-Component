@@ -83,77 +83,351 @@ class RunOffPrzm(base.Component):
         super(RunOffPrzm, self).__init__(name, observer, store)
         self._module = base.Module("PRZM_Runoff", "1.45")
         self._inputs = base.InputContainer(self, [
-            base.Input("ProcessingPath", (), self.default_observer),
-            base.Input("Model_AdsorptionMethod", (), self.default_observer),
-            base.Input("Model_SoilTemperatureSimulation", (), self.default_observer),
-            base.Input("SubstanceName", (), self.default_observer),
-            base.Input("Substance_PlantUptakeFactor", (), self.default_observer),
-            base.Input("Substance_PesticideDissipationRateOfFoliage", (), self.default_observer),
-            base.Input("Substance_FoliarWashOffCoefficient", (), self.default_observer),
-            base.Input("Substance_HenryConstant", (), self.default_observer),
-            base.Input("Substance_VapourPressure", (), self.default_observer),
-            base.Input("Substance_MolecularWeight", (), self.default_observer),
-            base.Input("Substance_WaterSolubility", (), self.default_observer),
-            base.Input("Substance_TemperatureAtWhichMeasured", (), self.default_observer),
-            base.Input("Substance_FreundlichExponent", (), self.default_observer),
-            base.Input("Substance_ReferenceMoistureForDT50Soil", (), self.default_observer),
-            base.Input("Substance_SoilDT50", (), self.default_observer),
-            base.Input("Substance_KocSoil", (), self.default_observer),
-            base.Input("SprayApplication_PrzmApplicationMethod", (), self.default_observer),
-            base.Input("SprayApplication_IncorporationDepth", (), self.default_observer),
-            base.Input("Options_StartDate", (attrib.Class(datetime.date, 1),), self.default_observer),
-            base.Input("Options_EndDate", (attrib.Class(datetime.date, 1),), self.default_observer),
-            base.Input("Options_TemporaryOutputPath", (), self.default_observer),
-            base.Input("Options_DeleteTemporaryGrids", (), self.default_observer),
-            base.Input("Options_TimeoutSecPrzm", (), self.default_observer),
-            base.Input("Options_ReportingThreshold", (), self.default_observer),
-            base.Input("Options_DeleteAllInterimResults", (), self.default_observer),
-            base.Input("Weather_Precipitation", (attrib.Transformable(1),), self.default_observer),
-            base.Input("Weather_ET0", (attrib.Transformable(1),), self.default_observer),
-            base.Input("Weather_Temperature", (attrib.Transformable(1),), self.default_observer),
-            base.Input("Weather_WindSpeed", (attrib.Transformable(1),), self.default_observer),
-            base.Input("Weather_SolarRadiation", (attrib.Transformable(1),), self.default_observer),
-            base.Input("Fields_Slope", (), self.default_observer),
-            base.Input("Fields_SoilHorizonThicknesses", (attrib.Class(list, 1),), self.default_observer),
-            base.Input("Fields_SoilHorizonBulkDensities", (attrib.Class(list, 1),), self.default_observer),
             base.Input(
-                "Fields_SoilHorizonOrganicMaterialContents",
-                (attrib.Class(list, 1),),
+                "ProcessingPath",
+                (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
                 self.default_observer
             ),
-            base.Input("Fields_SoilHorizonSandFractions", (attrib.Class(list, 1),), self.default_observer),
-            base.Input("Fields_SoilHorizonSiltFractions", (attrib.Class(list, 1),), self.default_observer),
-            base.Input("Fields_Geometries", (), self.default_observer),
-            base.Input("Fields_Ids", (), self.default_observer),
-            base.Input("Fields_Crs", (), self.default_observer),
-            base.Input("Fields_Extent", (), self.default_observer),
-            base.Input("Fields_FlowGrid", (), self.default_observer),
-            base.Input("Fields_InFieldMargin", (), self.default_observer),
-            base.Input("Ppm_AppliedFields", (), self.default_observer),
-            base.Input("Ppm_ApplicationDates", (), self.default_observer),
-            base.Input("Ppm_ApplicationRates", (), self.default_observer),
-            base.Input("Ppm_AppliedAreas", (), self.default_observer),
-            base.Input("Options_ShowExtendedErrorInformation", (), self.default_observer),
-            base.Input("Options_MethodOfRunoffGeneration", (), self.default_observer),
-            base.Input("Options_UsePreSimulatedPrzmResults", (), self.default_observer),
-            base.Input("Options_UseOnePrzmModelPerGridCell", (), self.default_observer),
-            base.Input("Options_UseVfsMod", (), self.default_observer),
-            base.Input("CropParameters_Crops", (attrib.Class("list[str]"),), self.default_observer),
-            base.Input("CropParameters_PanEvaporationFactors", (attrib.Class("list[float]"),), self.default_observer),
-            base.Input("CropParameters_CanopyIntersections", (attrib.Class("list[float]"),), self.default_observer),
-            base.Input("CropParameters_MaximumCoverages", (attrib.Class("list[int]"),), self.default_observer),
-            base.Input("CropParameters_MaximumHeights", (attrib.Class("list[int]"),), self.default_observer),
-            base.Input("CropParameters_MaximumRootingDepths", (attrib.Class("list[int]"),), self.default_observer),
-            base.Input("CropParameters_Fallows", (attrib.Class("list[float]"),), self.default_observer),
-            base.Input("CropParameters_Cropping", (attrib.Class("list[float]"),), self.default_observer),
-            base.Input("CropParameters_Residues", (attrib.Class("list[float]"),), self.default_observer),
-            base.Input("CropParameters_EmergenceDates", (attrib.Class("list[str]"),), self.default_observer),
-            base.Input("CropParameters_MaturationDates", (attrib.Class("list[str]"),), self.default_observer),
-            base.Input("CropParameters_HarvestDates", (attrib.Class("list[str]"),), self.default_observer),
-            base.Input("CropParameters_FallowDates", (attrib.Class("list[str]"),), self.default_observer),
-            base.Input("CropParameters_WaterMitigations", (attrib.Class("list[float]"),), self.default_observer),
-            base.Input("CropParameters_SedimentMitigations", (attrib.Class("list[float]"),), self.default_observer),
-            base.Input("CropParameters_VfsModLookupTables", (attrib.Class("list[str]"),), self.default_observer)
+            base.Input(
+                "Model_AdsorptionMethod",
+                (
+                    attrib.Class(str),
+                    attrib.Scales("global"),
+                    attrib.Unit(None),
+                    attrib.InList(("linear", "Freundlich", "aged"))
+                ),
+                self.default_observer
+            ),
+            base.Input(
+                "Model_SoilTemperatureSimulation",
+                (attrib.Class(int), attrib.Scales("global"), attrib.Unit(None), attrib.InList((0, 1, 2))),
+                self.default_observer
+            ),
+            base.Input(
+                "SubstanceName",
+                (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_PlantUptakeFactor",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_PesticideDissipationRateOfFoliage",
+                (attrib.Class(float), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_FoliarWashOffCoefficient",
+                (attrib.Class(float), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_HenryConstant",
+                (attrib.Class(float), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_VapourPressure",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("mPa")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_MolecularWeight",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("g/mol")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_WaterSolubility",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("mg/L")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_TemperatureAtWhichMeasured",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("K")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_FreundlichExponent",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_ReferenceMoistureForDT50Soil",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("%")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_SoilDT50",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("d")),
+                self.default_observer
+            ),
+            base.Input(
+                "Substance_KocSoil",
+                (attrib.Class(float), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
+                "SprayApplication_PrzmApplicationMethod",
+                (attrib.Class(str), attrib.Scales("global"), attrib.InList(("soil", "canopy", "foliar"))),
+                self.default_observer
+            ),
+            base.Input(
+                "SprayApplication_IncorporationDepth",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("cm")),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_StartDate",
+                (attrib.Class(datetime.date, 1), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_EndDate",
+                (attrib.Class(datetime.date, 1), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_TemporaryOutputPath",
+                (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_DeleteTemporaryGrids",
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_TimeoutSecPrzm",
+                (attrib.Class(int), attrib.Scales("global"), attrib.Unit("s")),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_ReportingThreshold",
+                (attrib.Class(float), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_DeleteAllInterimResults",
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Weather_Precipitation",
+                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("mm/d")),
+                self.default_observer
+            ),
+            base.Input(
+                "Weather_ET0",
+                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("mm/d")),
+                self.default_observer
+            ),
+            base.Input(
+                "Weather_Temperature",
+                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("°C")),
+                self.default_observer
+            ),
+            base.Input(
+                "Weather_WindSpeed",
+                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("m/s")),
+                self.default_observer
+            ),
+            base.Input(
+                "Weather_SolarRadiation",
+                (
+                    attrib.Transformable(1),
+                    attrib.Class(np.ndarray),
+                    attrib.Scales("time/day"),
+                    attrib.Unit("kJ/(m²*d)")
+                ),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_Slope",
+                (attrib.Class(float), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_SoilHorizonThicknesses",
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_SoilHorizonBulkDensities",
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_SoilHorizonOrganicMaterialContents",
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_SoilHorizonSandFractions",
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_SoilHorizonSiltFractions",
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_Geometries",
+                (attrib.Class("list[bytes]"), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_Ids",
+                (attrib.Class("list[int]"), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_Crs",
+                (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_Extent",
+                (attrib.Class("tuple[float]"), attrib.Scales("space/extent"), attrib.Unit("metre")),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_FlowGrid",
+                (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Fields_InFieldMargin",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("m")),
+                self.default_observer
+            ),
+            base.Input(
+                "Ppm_AppliedFields",
+                (attrib.Class(np.ndarray), attrib.Scales("other/application"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Ppm_ApplicationDates",
+                (attrib.Class(np.ndarray), attrib.Scales("other/application"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Ppm_ApplicationRates",
+                (attrib.Class(np.ndarray), attrib.Scales("other/application"), attrib.Unit("g/ha")),
+                self.default_observer
+            ),
+            base.Input(
+                "Ppm_AppliedAreas",
+                (attrib.Class("list[bytes]"), attrib.Scales("other/application"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_ShowExtendedErrorInformation",
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_MethodOfRunoffGeneration",
+                (attrib.Class(int), attrib.Scales("global"), attrib.Unit(None), attrib.Equals(1)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_UsePreSimulatedPrzmResults",
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_UseOnePrzmModelPerGridCell",
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "Options_UseVfsMod",
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_Crops",
+                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_PanEvaporationFactors",
+                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_CanopyInterceptions",
+                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_MaximumCoverages",
+                (attrib.Class("list[int]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_MaximumHeights",
+                (attrib.Class("list[int]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_MaximumRootingDepths",
+                (attrib.Class("list[int]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_Fallows",
+                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_Cropping",
+                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_Residues",
+                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_EmergenceDates",
+                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_MaturationDates",
+                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_HarvestDates",
+                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_FallowDates",
+                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_WaterMitigations",
+                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_SedimentMitigations",
+                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                self.default_observer
+            ),
+            base.Input(
+                "CropParameters_VfsModLookupTables",
+                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                self.default_observer
+            )
         ])
         self._outputs = base.OutputContainer(self, [base.Output("Exposure", store, self)])
         return
@@ -244,7 +518,8 @@ class RunOffPrzm(base.Component):
             shape=(simulation_length, raster_cols, raster_rows),
             data_type=np.float32,
             chunks=base.chunk_size((1, None, None), (simulation_length, raster_cols, raster_rows)),
-            scales="time/day, space_x/1sqm, space_y/1sqm"
+            scales="time/day, space_x/1sqm, space_y/1sqm",
+            unit="g/ha"
         )
         input_raster = {}
         for raster in glob.iglob(przm_folder + "/**/output/*.tif", recursive=True):
@@ -285,50 +560,54 @@ class RunOffPrzm(base.Component):
         """
         parameters = xml.etree.ElementTree.Element("parameters")
         model = xml.etree.ElementTree.SubElement(parameters, "model")
-        xml.etree.ElementTree.SubElement(model, "adsorption_method").text = self.inputs[
-            "Model_AdsorptionMethod"].read().values
-        xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = self.inputs[
-            "Model_SoilTemperatureSimulation"].read().values
+        xml.etree.ElementTree.SubElement(model, "adsorption_method").text = {
+            "linear": "1", "Freundlich": "2", "aged": "3"}[self.inputs["Model_AdsorptionMethod"].read().values]
+        xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = str(self.inputs[
+            "Model_SoilTemperatureSimulation"].read().values)
         substances = xml.etree.ElementTree.SubElement(parameters, "substances")
-        substance = xml.etree.ElementTree.SubElement(substances, "substance",
-                                                     {"name": self.inputs["SubstanceName"].read().values})
-        xml.etree.ElementTree.SubElement(substance, "plant_uptake_factor").text = self.inputs[
-            "Substance_PlantUptakeFactor"].read().values
-        xml.etree.ElementTree.SubElement(substance, "pesticide_dissipation_rate_of_foliage").text = self.inputs[
-            "Substance_PesticideDissipationRateOfFoliage"].read().values
-        xml.etree.ElementTree.SubElement(substance, "foliar_wash_off_coefficient").text = self.inputs[
-            "Substance_FoliarWashOffCoefficient"].read().values
-        xml.etree.ElementTree.SubElement(substance, "henry_constant").text = self.inputs[
-            "Substance_HenryConstant"].read().values
-        xml.etree.ElementTree.SubElement(substance, "vapour_pressure").text = self.inputs[
-            "Substance_VapourPressure"].read().values
-        xml.etree.ElementTree.SubElement(substance, "molecular_weight").text = self.inputs[
-            "Substance_MolecularWeight"].read().values
-        xml.etree.ElementTree.SubElement(substance, "water_solubility").text = self.inputs[
-            "Substance_WaterSolubility"].read().values
-        xml.etree.ElementTree.SubElement(substance, "temperature_at_which_measured").text = self.inputs[
-            "Substance_TemperatureAtWhichMeasured"].read().values
-        xml.etree.ElementTree.SubElement(substance, "freundlich_exponent").text = self.inputs[
-            "Substance_FreundlichExponent"].read().values
-        xml.etree.ElementTree.SubElement(substance, "reference_moisture_for_dt50_soil").text = self.inputs[
-            "Substance_ReferenceMoistureForDT50Soil"].read().values
-        xml.etree.ElementTree.SubElement(substance, "soil_dt50").text = self.inputs["Substance_SoilDT50"].read().values
-        xml.etree.ElementTree.SubElement(substance, "koc_soil").text = self.inputs["Substance_KocSoil"].read().values
+        substance = xml.etree.ElementTree.SubElement(
+            substances, "substance", {"name": self.inputs["SubstanceName"].read().values})
+        xml.etree.ElementTree.SubElement(substance, "plant_uptake_factor").text = str(self.inputs[
+            "Substance_PlantUptakeFactor"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "pesticide_dissipation_rate_of_foliage").text = str(self.inputs[
+            "Substance_PesticideDissipationRateOfFoliage"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "foliar_wash_off_coefficient").text = str(self.inputs[
+            "Substance_FoliarWashOffCoefficient"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "henry_constant").text = str(self.inputs[
+            "Substance_HenryConstant"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "vapour_pressure").text = str(self.inputs[
+            "Substance_VapourPressure"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "molecular_weight").text = str(self.inputs[
+            "Substance_MolecularWeight"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "water_solubility").text = str(self.inputs[
+            "Substance_WaterSolubility"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "temperature_at_which_measured").text = str(self.inputs[
+            "Substance_TemperatureAtWhichMeasured"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "freundlich_exponent").text = str(self.inputs[
+            "Substance_FreundlichExponent"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "reference_moisture_for_dt50_soil").text = str(self.inputs[
+            "Substance_ReferenceMoistureForDT50Soil"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "soil_dt50").text = str(
+            self.inputs["Substance_SoilDT50"].read().values)
+        xml.etree.ElementTree.SubElement(substance, "koc_soil").text = str(
+            self.inputs["Substance_KocSoil"].read().values)
         ppp = xml.etree.ElementTree.SubElement(parameters, "ppp")
         xml.etree.ElementTree.SubElement(ppp, "ppp_repository").text = ppp_repository
         cropping = xml.etree.ElementTree.SubElement(parameters, "cropping")
         xml.etree.ElementTree.SubElement(cropping, "cropping_calendar").text = cropping_calendar
         xml.etree.ElementTree.SubElement(cropping, "ppm_calendar").text = ppm_calendar
         chemical_application_methods = xml.etree.ElementTree.SubElement(cropping, "chemical_application_methods")
-        chemical_application_method_spray_application = xml.etree.ElementTree.SubElement(chemical_application_methods,
-                                                                                         "chemical_application_method",
-                                                                                         {"name": "SprayApplication"})
-        xml.etree.ElementTree.SubElement(chemical_application_method_spray_application,
-                                         "przm_application_method").text = self.inputs[
-            "SprayApplication_PrzmApplicationMethod"].read().values
-        xml.etree.ElementTree.SubElement(chemical_application_method_spray_application,
-                                         "incorporation_depth").text = self.inputs[
-            "SprayApplication_IncorporationDepth"].read().values
+        chemical_application_method_spray_application = xml.etree.ElementTree.SubElement(
+            chemical_application_methods, "chemical_application_method", {"name": "SprayApplication"})
+        xml.etree.ElementTree.SubElement(
+            chemical_application_method_spray_application, "przm_application_method").text = {
+            "soil": "0",
+            "canopy": "1",
+            "foliar": "2"}[
+            self.inputs["SprayApplication_PrzmApplicationMethod"].read().values]
+        xml.etree.ElementTree.SubElement(
+            chemical_application_method_spray_application, "incorporation_depth").text = str(
+            self.inputs["SprayApplication_IncorporationDepth"].read().values)
         # noinspection SpellCheckingInspection
         xml.etree.ElementTree.SubElement(cropping, "crop_parameterisation").text = crop_parameterization
         landscape = xml.etree.ElementTree.SubElement(parameters, "landscape")
@@ -346,26 +625,27 @@ class RunOffPrzm(base.Component):
             self.convert_to_przm_date(simulation_end, simulation_end))
         xml.etree.ElementTree.SubElement(options, "temporary_output_path").text = self.inputs[
             "Options_TemporaryOutputPath"].read().values
-        xml.etree.ElementTree.SubElement(options, "delete_temporary_grids").text = self.inputs[
-            "Options_DeleteTemporaryGrids"].read().values
-        xml.etree.ElementTree.SubElement(options, "TimeoutSecPRZM").text = self.inputs[
-            "Options_TimeoutSecPrzm"].read().values
+        xml.etree.ElementTree.SubElement(options, "delete_temporary_grids").text = "1" if self.inputs[
+            "Options_DeleteTemporaryGrids"].read().values else "0"
+        xml.etree.ElementTree.SubElement(options, "TimeoutSecPRZM").text = str(
+            self.inputs["Options_TimeoutSecPrzm"].read().values)
         # noinspection SpellCheckingInspection
-        xml.etree.ElementTree.SubElement(options, "reporting_threashold").text = self.inputs[
-            "Options_ReportingThreshold"].read().values
-        xml.etree.ElementTree.SubElement(options, "method_of_runoff_generation").text = self.inputs[
-            "Options_MethodOfRunoffGeneration"].read().values
-        xml.etree.ElementTree.SubElement(options, "delete_all_interim_results").text = self.inputs[
-            "Options_DeleteAllInterimResults"].read().values
+        xml.etree.ElementTree.SubElement(options, "reporting_threashold").text = str(
+            self.inputs["Options_ReportingThreshold"].read().values)
+        xml.etree.ElementTree.SubElement(options, "method_of_runoff_generation").text = str(self.inputs[
+            "Options_MethodOfRunoffGeneration"].read().values)
+        xml.etree.ElementTree.SubElement(options, "delete_all_interim_results").text = "1" if self.inputs[
+            "Options_DeleteAllInterimResults"].read().values else "0"
         # noinspection SpellCheckingInspection
-        xml.etree.ElementTree.SubElement(options, "show_extended_error_infos").text = self.inputs[
-            "Options_ShowExtendedErrorInformation"].read().values
+        xml.etree.ElementTree.SubElement(options, "show_extended_error_infos").text = "1" if self.inputs[
+            "Options_ShowExtendedErrorInformation"].read().values else "0"
         # noinspection SpellCheckingInspection
-        xml.etree.ElementTree.SubElement(options, "use_presimulated_przm_results").text = self.inputs[
-            "Options_UsePreSimulatedPrzmResults"].read().values
-        xml.etree.ElementTree.SubElement(options, "use_one_przm_model_per_grid_cell").text = self.inputs[
-            "Options_UseOnePrzmModelPerGridCell"].read().values
-        xml.etree.ElementTree.SubElement(options, "use_vfs_mod").text = self.inputs["Options_UseVfsMod"].read().values
+        xml.etree.ElementTree.SubElement(options, "use_presimulated_przm_results").text = "1" if self.inputs[
+            "Options_UsePreSimulatedPrzmResults"].read().values else "0"
+        xml.etree.ElementTree.SubElement(options, "use_one_przm_model_per_grid_cell").text = "1" if self.inputs[
+            "Options_UseOnePrzmModelPerGridCell"].read().values else "0"
+        xml.etree.ElementTree.SubElement(options, "use_vfs_mod").text = "1" if self.inputs[
+            "Options_UseVfsMod"].read().values else "0"
         xml.etree.ElementTree.ElementTree(parameters).write(output_file, encoding="utf-8", xml_declaration=True)
         return
 
@@ -548,7 +828,7 @@ class RunOffPrzm(base.Component):
         """
         crops = xml.etree.ElementTree.Element("crops")
         pan_evaporation_factors = self.inputs["CropParameters_PanEvaporationFactors"].read().values
-        canopy_intersections = self.inputs["CropParameters_CanopyIntersections"].read().values
+        canopy_interceptions = self.inputs["CropParameters_CanopyInterceptions"].read().values
         maximum_coverages = self.inputs["CropParameters_MaximumCoverages"].read().values
         maximum_heights = self.inputs["CropParameters_MaximumHeights"].read().values
         maximum_rooting_depths = self.inputs["CropParameters_MaximumRootingDepths"].read().values
@@ -566,7 +846,7 @@ class RunOffPrzm(base.Component):
             crop = xml.etree.ElementTree.SubElement(crops, "crop", {"name": crop_name})
             # noinspection SpellCheckingInspection
             xml.etree.ElementTree.SubElement(crop, "pan_evap_factor").text = str(pan_evaporation_factors[i])
-            xml.etree.ElementTree.SubElement(crop, "canopy_interception").text = str(canopy_intersections[i])
+            xml.etree.ElementTree.SubElement(crop, "canopy_interception").text = str(canopy_interceptions[i])
             xml.etree.ElementTree.SubElement(crop, "maximum_coverage").text = str(maximum_coverages[i])
             xml.etree.ElementTree.SubElement(crop, "maximum_height").text = str(maximum_heights[i])
             xml.etree.ElementTree.SubElement(crop, "maximum_rooting_depth").text = str(maximum_rooting_depths[i])
