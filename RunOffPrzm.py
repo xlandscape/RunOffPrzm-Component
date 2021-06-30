@@ -18,6 +18,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.5", "2021-06-30"),
         base.VersionInfo("2.0.4", "2021-06-29"),
         base.VersionInfo("2.0.3", "2021-06-28"),
         base.VersionInfo("2.0.2", "2021-06-24"),
@@ -80,6 +81,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.2", "Updated data type access")
     VERSION.changed("2.0.3", "Crop parameterization added to component configuration")
     VERSION.changed("2.0.4", "Added semantic descriptions of input parameters")
+    VERSION.changed("2.0.5", "Added further unit attributes to the component's inputs")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
@@ -112,22 +114,22 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Substance_PlantUptakeFactor",
-                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1")),
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1/d")),
                 self.default_observer
             ),
             base.Input(
                 "Substance_PesticideDissipationRateOfFoliage",
-                (attrib.Class(float), attrib.Scales("global")),
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1/d")),
                 self.default_observer
             ),
             base.Input(
                 "Substance_FoliarWashOffCoefficient",
-                (attrib.Class(float), attrib.Scales("global")),
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1/cm")),
                 self.default_observer
             ),
             base.Input(
                 "Substance_HenryConstant",
-                (attrib.Class(float), attrib.Scales("global")),
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1")),
                 self.default_observer
             ),
             base.Input(
@@ -167,12 +169,17 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Substance_KocSoil",
-                (attrib.Class(float), attrib.Scales("global")),
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("cm³/g")),
                 self.default_observer
             ),
             base.Input(
                 "SprayApplication_PrzmApplicationMethod",
-                (attrib.Class(str), attrib.Scales("global"), attrib.InList(("soil", "canopy", "foliar"))),
+                (
+                    attrib.Class(str),
+                    attrib.Scales("global"),
+                    attrib.Unit(None),
+                    attrib.InList(("soil", "canopy", "foliar"))
+                ),
                 self.default_observer
             ),
             base.Input(
@@ -207,7 +214,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Options_ReportingThreshold",
-                (attrib.Class(float), attrib.Scales("global")),
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("mg")),
                 self.default_observer
             ),
             base.Input(
@@ -247,32 +254,32 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Fields_Slope",
-                (attrib.Class(float), attrib.Scales("global")),
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("%")),
                 self.default_observer
             ),
             base.Input(
                 "Fields_SoilHorizonThicknesses",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("cm")),
                 self.default_observer
             ),
             base.Input(
                 "Fields_SoilHorizonBulkDensities",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("g/cm³")),
                 self.default_observer
             ),
             base.Input(
                 "Fields_SoilHorizonOrganicMaterialContents",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
                 self.default_observer
             ),
             base.Input(
                 "Fields_SoilHorizonSandFractions",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
                 self.default_observer
             ),
             base.Input(
                 "Fields_SoilHorizonSiltFractions",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon")),
+                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
                 self.default_observer
             ),
             base.Input(
@@ -332,7 +339,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Options_MethodOfRunoffGeneration",
-                (attrib.Class(int), attrib.Scales("global"), attrib.Unit(None), attrib.Equals(1)),
+                (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None), attrib.InList(("PRZM", "FOCUS"))),
                 self.default_observer
             ),
             base.Input(
@@ -357,42 +364,42 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "CropParameters_PanEvaporationFactors",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_CanopyInterceptions",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_MaximumCoverages",
-                (attrib.Class("list[int]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("%")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_MaximumHeights",
-                (attrib.Class("list[int]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_MaximumRootingDepths",
-                (attrib.Class("list[int]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_Fallows",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_Cropping",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_Residues",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer
             ),
             base.Input(
@@ -417,12 +424,12 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "CropParameters_WaterMitigations",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer
             ),
             base.Input(
                 "CropParameters_SedimentMitigations",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop")),
+                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer
             ),
             base.Input(
@@ -634,8 +641,8 @@ class RunOffPrzm(base.Component):
         # noinspection SpellCheckingInspection
         xml.etree.ElementTree.SubElement(options, "reporting_threashold").text = str(
             self.inputs["Options_ReportingThreshold"].read().values)
-        xml.etree.ElementTree.SubElement(options, "method_of_runoff_generation").text = str(self.inputs[
-            "Options_MethodOfRunoffGeneration"].read().values)
+        xml.etree.ElementTree.SubElement(options, "method_of_runoff_generation").text = {
+            "PRZM": "1", "FOCUS": "0"}[self.inputs["Options_MethodOfRunoffGeneration"].read().values]
         xml.etree.ElementTree.SubElement(options, "delete_all_interim_results").text = "1" if self.inputs[
             "Options_DeleteAllInterimResults"].read().values else "0"
         # noinspection SpellCheckingInspection
