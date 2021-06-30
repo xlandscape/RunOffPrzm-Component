@@ -104,7 +104,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Model_SoilTemperatureSimulation",
-                (attrib.Class(int), attrib.Scales("global"), attrib.Unit(None), attrib.InList((0, 1, 2))),
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
                 self.default_observer
             ),
             base.Input(
@@ -571,8 +571,8 @@ class RunOffPrzm(base.Component):
         model = xml.etree.ElementTree.SubElement(parameters, "model")
         xml.etree.ElementTree.SubElement(model, "adsorption_method").text = {
             "linear": "1", "Freundlich": "2", "aged": "3"}[self.inputs["Model_AdsorptionMethod"].read().values]
-        xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = str(self.inputs[
-            "Model_SoilTemperatureSimulation"].read().values)
+        xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = "2" if self.inputs[
+            "Model_SoilTemperatureSimulation"].read().values else "0"
         substances = xml.etree.ElementTree.SubElement(parameters, "substances")
         substance = xml.etree.ElementTree.SubElement(
             substances, "substance", {"name": self.inputs["SubstanceName"].read().values})
