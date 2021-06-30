@@ -18,6 +18,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.5", "2021-06-30"),
         base.VersionInfo("2.0.4", "2021-06-29"),
         base.VersionInfo("2.0.3", "2021-06-28"),
         base.VersionInfo("2.0.2", "2021-06-24"),
@@ -80,6 +81,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.2", "Updated data type access")
     VERSION.changed("2.0.3", "Crop parameterization added to component configuration")
     VERSION.changed("2.0.4", "Added semantic descriptions of input parameters")
+    VERSION.changed("2.0.5", "Added further unit attributes to the component's inputs")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
