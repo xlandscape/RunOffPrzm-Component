@@ -18,6 +18,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.6", "2021-06-30"),
         base.VersionInfo("2.0.5", "2021-06-30"),
         base.VersionInfo("2.0.4", "2021-06-29"),
         base.VersionInfo("2.0.3", "2021-06-28"),
@@ -82,6 +83,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.3", "Crop parameterization added to component configuration")
     VERSION.changed("2.0.4", "Added semantic descriptions of input parameters")
     VERSION.changed("2.0.5", "Added further unit attributes to the component's inputs")
+    VERSION.changed("2.0.6", "Minor changes in input descriptions")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
@@ -104,7 +106,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Model_SoilTemperatureSimulation",
-                (attrib.Class(int), attrib.Scales("global"), attrib.Unit(None), attrib.InList((0, 1, 2))),
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
                 self.default_observer
             ),
             base.Input(
@@ -571,8 +573,8 @@ class RunOffPrzm(base.Component):
         model = xml.etree.ElementTree.SubElement(parameters, "model")
         xml.etree.ElementTree.SubElement(model, "adsorption_method").text = {
             "linear": "1", "Freundlich": "2", "aged": "3"}[self.inputs["Model_AdsorptionMethod"].read().values]
-        xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = str(self.inputs[
-            "Model_SoilTemperatureSimulation"].read().values)
+        xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = "2" if self.inputs[
+            "Model_SoilTemperatureSimulation"].read().values else "0"
         substances = xml.etree.ElementTree.SubElement(parameters, "substances")
         substance = xml.etree.ElementTree.SubElement(
             substances, "substance", {"name": self.inputs["SubstanceName"].read().values})
