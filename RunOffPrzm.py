@@ -681,11 +681,11 @@ class RunOffPrzm(base.Component):
                 mapped_date.month,
                 mapped_date.day,
                 mapped_date.year - 1900,
-                precipitation.values[precipitation.extension.t(date)] / 10,
-                et0.values[et0.extension.t(date)] / 10,
-                temperature.values[temperature.extension.t(date)],
-                wind_speed.values[wind_speed.extension.t(date)] * 100,
-                radiation.values[radiation.extension.t(date)] / 41.84))
+                precipitation.values[i] / 10,
+                et0.values[i] / 10,
+                temperature.values[i],
+                wind_speed.values[i] * 100,
+                radiation.values[i] / 41.84))
         weather_file.close()
         return
 
