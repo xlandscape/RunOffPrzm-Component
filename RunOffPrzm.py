@@ -18,6 +18,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.7", "2021-07-05"),
         base.VersionInfo("2.0.6", "2021-06-30"),
         base.VersionInfo("2.0.5", "2021-06-30"),
         base.VersionInfo("2.0.4", "2021-06-29"),
@@ -84,6 +85,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.4", "Added semantic descriptions of input parameters")
     VERSION.changed("2.0.5", "Added further unit attributes to the component's inputs")
     VERSION.changed("2.0.6", "Minor changes in input descriptions")
+    VERSION.changed("2.0.7", "No longer transforms date coordinates")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
@@ -681,11 +683,11 @@ class RunOffPrzm(base.Component):
                 mapped_date.month,
                 mapped_date.day,
                 mapped_date.year - 1900,
-                precipitation.values[precipitation.extension.t(date)] / 10,
-                et0.values[et0.extension.t(date)] / 10,
-                temperature.values[temperature.extension.t(date)],
-                wind_speed.values[wind_speed.extension.t(date)] * 100,
-                radiation.values[radiation.extension.t(date)] / 41.84))
+                precipitation.values[i] / 10,
+                et0.values[i] / 10,
+                temperature.values[i],
+                wind_speed.values[i] * 100,
+                radiation.values[i] / 41.84))
         weather_file.close()
         return
 
