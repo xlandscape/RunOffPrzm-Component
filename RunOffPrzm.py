@@ -25,6 +25,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.8", "2021-07-08"),
         base.VersionInfo("2.0.7", "2021-07-05"),
         base.VersionInfo("2.0.6", "2021-06-30"),
         base.VersionInfo("2.0.5", "2021-06-30"),
@@ -114,6 +115,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.5", "Added further unit attributes to the component's inputs")
     VERSION.changed("2.0.6", "Minor changes in input descriptions")
     VERSION.changed("2.0.7", "No longer transforms date coordinates")
+    VERSION.changed("2.0.8", "Added documentation of inputs and outputs")
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
