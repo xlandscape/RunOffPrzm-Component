@@ -1,6 +1,16 @@
 # Changelog
 This is the changelog for the XSprayDrift component. It was automatically created on 2021-07-08.
 
+## [2.0.8] - 2021-07-08
+
+### Added
+
+### Changed
+- Added documentation of inputs and outputs
+
+### Fixed
+
+
 ## [2.0.7] - 2021-07-05
 
 ### Added
