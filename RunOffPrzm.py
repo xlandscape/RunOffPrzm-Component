@@ -10,11 +10,18 @@ import shutil
 import attrib
 import base
 import xml.etree.ElementTree
+import math
 
 
 class RunOffPrzm(base.Component):
     """
-    Encapsulates the RunOffPRZM module in a Landscape Model component.
+    RunOffPrzm is a Landscape Model component for simulating run-off processes with the
+    [Pesticide Root Zone Model (PRZM)](https://esdac.jrc.ec.europa.eu/projects/przmsw). The component encapsulates a
+    module that extends standard PRZM runs for each application within the simulated landscape by a spatial explicit
+    surface flow model. `RunOffPrzm` outputs run-off deposition at a square-meter resolution, but the flow model may
+    have an arbitrarily coarser resolution. `RunOffPrzm` simulates filtering between square-meter cells either using
+    the FOCUS curve number technique or a
+    [vegetative filter strip model](https://abe.ufl.edu/faculty/carpena/vfsmod/index.shtml) (VfsMOD).
     """
     # RELEASES
     VERSION = base.VersionCollection(
@@ -49,6 +56,27 @@ class RunOffPrzm(base.Component):
         base.VersionInfo("1.1.2", None),
         base.VersionInfo("1.1.1", None)
     )
+
+    # AUTHORS
+    VERSION.authors.extend((
+        "Sascha Bub - sascha.bub@gmx.de",
+        "Joachim Kleinmann - joachim.kleinmann@wsc-regexperts.com",
+        "Thorsten Schad - thorsten.schad@bayer.com"
+    ))
+
+    # ACKNOWLEDGEMENTS
+    VERSION.acknowledgements.extend((
+        "[GDAL](https://pypi.org/project/GDAL)",
+        "[PRZM](https://esdac.jrc.ec.europa.eu/projects/przmsw)"
+    ))
+
+    # ROADMAP
+    VERSION.roadmap.extend((
+        """Documentation of the component needs to be checked and improved
+        ([#1](https://gitlab.bayer.com/aqrisk-landscape/runoffprzm-component/-/issues/1))""",
+        """PRZM GUI should be started in the background
+        ([#7](https://gitlab.bayer.com/aqrisk-landscape/runoffprzm-component/-/issues/7))""",
+    ))
 
     # CHANGELOG
     VERSION.added("1.1.1", "components.RunOffPrzm component")
@@ -89,12 +117,18 @@ class RunOffPrzm(base.Component):
 
     def __init__(self, name, observer, store):
         super(RunOffPrzm, self).__init__(name, observer, store)
-        self._module = base.Module("PRZM_Runoff", "1.45")
-        self._inputs = base.InputContainer(self, [
+        self._module = base.Module("PRZM_Runoff", "1.45", "Release 1.4\\Changelog.txt")
+        self._inputs = base.InputContainer(self, (
             base.Input(
                 "ProcessingPath",
                 (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The working directory for the module. It is used for all files prepared as module inputs
+                or generated as module outputs. This excludes the files of the actual PRZM run whose path. See the 
+                [Options_TemporaryOutputPath](#Options_TemporaryOutputPath) input for the according parameterization. 
+                the `ProcessingPath` are considered temporary and can be safely deleted after a successful simulation 
+                run. Make sure that the `ProcessingPath` is configured in such a way that it does not collide with
+                other simulation runs (of different experiments or Monte Carlo runs)."""
             ),
             base.Input(
                 "Model_AdsorptionMethod",
@@ -104,77 +138,104 @@ class RunOffPrzm(base.Component):
                     attrib.Unit(None),
                     attrib.InList(("linear", "Freundlich", "aged"))
                 ),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies how PRZM simulates adsorption. Three methods are available: `linear` 
+                calculates adsorption based on a linear regression, `Freundlich` based on a normalized Freundlich 
+                equation and `aged` uses an aged adsorption function."""
             ),
             base.Input(
                 "Model_SoilTemperatureSimulation",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies whether to simulate soil temperature or not. Enabled soil temperature 
+                simulation does not consider nitrogen transport."""
             ),
             base.Input(
                 "SubstanceName",
                 (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""Substances differ in their properties and, thus, for every substance simulated a 
+                different set of values has to be specified. The current `RunOffPrzm` component does, however, allow to 
+                simulate a single substance only. This might change in the future, as the module is conceptually and 
+                technically prepared to handle multiple substances simultaneously. The `SubstanceName` has currently
+                no technical relevance."""
             ),
             base.Input(
                 "Substance_PlantUptakeFactor",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1/d")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific PRZM plant uptake factor."
             ),
             base.Input(
                 "Substance_PesticideDissipationRateOfFoliage",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1/d")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific PRZM pesticide dissipation rate on foliage."
             ),
             base.Input(
                 "Substance_FoliarWashOffCoefficient",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1/cm")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific PRZM foliar wash-off coefficient."
             ),
             base.Input(
                 "Substance_HenryConstant",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="""The substance-specific Henry constant. You can also set this input to the special value
+                of `nan` to let the module derive the Henry constant from the input values of
+                [Substance_VapourPressure](#Substance_VapourPressure),
+                [Substance_MolecularWeight](#Substance_MolecularWeight), 
+                [Substance_WaterSolubility](#Substance_WaterSolubility) and 
+                [Substance_TemperatureAtWhichMeasured](#Substance_TemperatureAtWhichMeasured)."""
             ),
             base.Input(
                 "Substance_VapourPressure",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("mPa")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific vapor pressure."
             ),
             base.Input(
                 "Substance_MolecularWeight",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("g/mol")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific molecular weight."
             ),
             base.Input(
                 "Substance_WaterSolubility",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("mg/L")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific water solubility."
             ),
             base.Input(
                 "Substance_TemperatureAtWhichMeasured",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("K")),
-                self.default_observer
+                self.default_observer,
+                description="The reference temperature for the physical and chemical properties of the substance."
             ),
             base.Input(
                 "Substance_FreundlichExponent",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific Freundlich exponent."
             ),
             base.Input(
                 "Substance_ReferenceMoistureForDT50Soil",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("%")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific reference moisture for the soil DT50 in percent of field capacity."
             ),
             base.Input(
                 "Substance_SoilDT50",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("d")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific soil half-life time."
             ),
             base.Input(
                 "Substance_KocSoil",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("cm³/g")),
-                self.default_observer
+                self.default_observer,
+                description="The substance-specific KOC in soil."
             ),
             base.Input(
                 "SprayApplication_PrzmApplicationMethod",
@@ -184,265 +245,409 @@ class RunOffPrzm(base.Component):
                     attrib.Unit(None),
                     attrib.InList(("soil", "canopy", "foliar"))
                 ),
-                self.default_observer
+                self.default_observer,
+                description="""The PRZM chemical application method that is assumed for all spray applications. `soil`
+                indicates direct spraying of the soil surface, `canopy` of the crop canopy and `foliar` a foliar
+                application."""
             ),
             base.Input(
                 "SprayApplication_IncorporationDepth",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("cm")),
-                self.default_observer
+                self.default_observer,
+                description="The PRZM incorporation depth of spray applications."
             ),
             base.Input(
                 "Options_StartDate",
                 (attrib.Class(datetime.date, 1), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="The first simulated date. All temporal input parameters must start at this date."
             ),
             base.Input(
                 "Options_EndDate",
                 (attrib.Class(datetime.date, 1), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="The last simulated date. All temporal input parameters must end at this date."
             ),
             base.Input(
                 "Options_TemporaryOutputPath",
                 (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""PRZM cannot run in paths with long names. The [ProcessingPath](#ProcessingPath), due to 
+                its requirement to be unique for each simulation run, is normally too long to be used here. Instead, 
+                PRZM simulations run in the directory specified by the `Options_TemporaryOutputPath` input."""
             ),
             base.Input(
                 "Options_DeleteTemporaryGrids",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""`RunOffPrzm` creates an output grid for each field in the landscape before it merges 
+                them. If the temporary output of each field should be deleted as early as possible, set this option to `
+                true`. `False` is the right option if you need to keep the temporary grids, e.g., for debugging."""
             ),
             base.Input(
                 "Options_TimeoutSecPrzm",
                 (attrib.Class(int), attrib.Scales("global"), attrib.Unit("s")),
-                self.default_observer
+                self.default_observer,
+                description="""The time after which an idle PRZM instance timeouts. Tweak this option to prevent locks
+                            in some rare circumstances."""
             ),
             base.Input(
                 "Options_ReportingThreshold",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("mg")),
-                self.default_observer
+                self.default_observer,
+                description="""The minimum mass that is required to trigger continuation of the water and substance 
+                flow simulation. Smaller masses remain at the current cell and are not further transported. Set this
+                option to a sensible value that allows to capture all relevant depositions while reducing the processing
+                time."""
             ),
             base.Input(
                 "Options_DeleteAllInterimResults",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies whether to delete all intermediary files after a successful simulation run.
+                Enable this option to save disk space (intermediary files may accumulate to a considerable amount) or
+                disable it if you need to keep intermediary files, e.g., for debugging."""
             ),
             base.Input(
                 "Weather_Precipitation",
-                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("mm/d")),
-                self.default_observer
+                (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("mm/d")),
+                self.default_observer,
+                description="""A series of daily precipitation values. The series must cover the entire range between
+                [Options_StartDate](#Options_StartDate) and [Options_EndDate](#Options_EndDate) in consecutive order."""
             ),
             base.Input(
                 "Weather_ET0",
-                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("mm/d")),
-                self.default_observer
+                (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("mm/d")),
+                self.default_observer,
+                description="""A series of daily evapotranspiration values. The series must cover the entire range 
+                between [Options_StartDate](#Options_StartDate) and [Options_EndDate](#Options_EndDate) in consecutive
+                order."""
             ),
             base.Input(
                 "Weather_Temperature",
-                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("°C")),
-                self.default_observer
+                (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("°C")),
+                self.default_observer,
+                description="""A series of daily temperature values. The series must cover the entire range between
+                [Options_StartDate](#Options_StartDate) and [Options_EndDate](#Options_EndDate) in consecutive order."""
             ),
             base.Input(
                 "Weather_WindSpeed",
-                (attrib.Transformable(1), attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("m/s")),
-                self.default_observer
+                (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("m/s")),
+                self.default_observer,
+                description="""A series of daily wind speed values. The series must cover the entire range between
+                [Options_StartDate](#Options_StartDate) and [Options_EndDate](#Options_EndDate) in consecutive order."""
             ),
             base.Input(
                 "Weather_SolarRadiation",
-                (
-                    attrib.Transformable(1),
-                    attrib.Class(np.ndarray),
-                    attrib.Scales("time/day"),
-                    attrib.Unit("kJ/(m²*d)")
-                ),
-                self.default_observer
+                (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("kJ/(m²*d)")),
+                self.default_observer,
+                description="""A series of daily solar radiation values. The series must cover the entire range between
+                [Options_StartDate](#Options_StartDate) and [Options_EndDate](#Options_EndDate) in consecutive order."""
             ),
             base.Input(
                 "Fields_Slope",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("%")),
-                self.default_observer
+                self.default_observer,
+                description="""The average slope of all fields in the landscape. This slope is feeds PRZM run-off
+                calculations and is independent of the slopes underlying the [Fields_FlowGrid](#Fields_FlowGrid). 
+                Please make sure that representation of slopes is somewhat consistent between landscape scenario and 
+                `RunOffPrzm` parameterization. A later version may allow specifying slopes on a per-field basis instead
+                of globally."""
             ),
             base.Input(
                 "Fields_SoilHorizonThicknesses",
                 (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("cm")),
-                self.default_observer
+                self.default_observer,
+                description="""A sequence of soil horizon depths from top to bottom. This sequence defines how many
+                soil horizons there are and how they are distributed along the z-axis."""
             ),
             base.Input(
                 "Fields_SoilHorizonBulkDensities",
                 (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("g/cm³")),
-                self.default_observer
+                self.default_observer,
+                description="""A sequence of soil horizon bulk densities from top to bottom. This sequence must have the
+                same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
+                Elements refer to the same soil horizon (in the same order) as the soil horizons specified there."""
             ),
             base.Input(
                 "Fields_SoilHorizonOrganicMaterialContents",
                 (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
-                self.default_observer
+                self.default_observer,
+                description="""A sequence of soil horizon organic material contents from top to bottom. This sequence 
+                must have the same number of elements as the 
+                [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence. Elements refer to the same 
+                soil horizon (in the same order) as the soil horizons specified there."""
             ),
             base.Input(
                 "Fields_SoilHorizonSandFractions",
                 (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
-                self.default_observer
+                self.default_observer,
+                description="""A sequence of soil horizon sand fractions from top to bottom. This sequence must have the
+                same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
+                Elements refer to the same soil horizon (in the same order) as the soil horizons specified there."""
             ),
             base.Input(
                 "Fields_SoilHorizonSiltFractions",
                 (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
-                self.default_observer
+                self.default_observer,
+                description="""A sequence of soil horizon silk fractions from top to bottom. This sequence must have the
+                same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
+                Elements refer to the same soil horizon (in the same order) as the soil horizons specified there."""
             ),
             base.Input(
                 "Fields_Geometries",
                 (attrib.Class("list[bytes]"), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The geometries of in-field areas in WKB representation. Each element refers to a field
+                with its according identifier from the list of [Fields_Ids](#Fields_Ids)."""
             ),
             base.Input(
                 "Fields_Ids",
                 (attrib.Class("list[int]"), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The simulation-wide unique identifiers of fields within the landscape. These identifiers
+                stem from the landscape scenario and are shared among components."""
             ),
             base.Input(
                 "Fields_Crs",
                 (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The coordinate reference system in which the [Fields_Geometries](#Fields_Geometries) 
+                are projected. The coordinate reference system needs to be in Proj4 notation."""
             ),
             base.Input(
                 "Fields_Extent",
                 (attrib.Class("tuple[float]"), attrib.Scales("space/extent"), attrib.Unit("metre")),
-                self.default_observer
+                self.default_observer,
+                description="""The extent of the simulated landscape. This value has to be consistent with the 
+                [Fields_Geometries](#Fields_Geometries) and the [Fields_FlowGrid](#Fields_FlowGrid) and is projected
+                in the [Fields_Crs](#Fields_Crs). The landscape scenario normally takes care of that."""
             ),
             base.Input(
                 "Fields_FlowGrid",
                 (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The file path to a raster file that contains information about the flow direction 
+                between individual raster cells. Flow directions follow the [ESRI standard](
+                https://desktop.arcgis.com/de/arcmap/10.3/tools/spatial-analyst-toolbox/flow-direction.htm) encoding 
+                for flow directions."""
             ),
             base.Input(
                 "Fields_InFieldMargin",
                 (attrib.Class(float), attrib.Scales("global"), attrib.Unit("m")),
-                self.default_observer
+                self.default_observer,
+                description="""A width of an inner margin along field boundaries that is not covered with crop but with
+                other herbaceous vegetation. This value applies to all fields in the landscape and does not change over
+                time, but a future version of the component may allow for spatio-temporal variation."""
             ),
             base.Input(
                 "Ppm_AppliedFields",
                 (attrib.Class(np.ndarray), attrib.Scales("other/application"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The identifiers of applied fields (according to the [Fields_Ids](#Fields_Ids)) per 
+                application. The number of elements defines how many applications there are in total, and the values
+                link applications to individual fields."""
             ),
             base.Input(
                 "Ppm_ApplicationDates",
                 (attrib.Class(np.ndarray), attrib.Scales("other/application"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The dates of application. This specifies for each application indicated by the 
+                [Ppm_AppliedFields](#Ppm_AppliedFields), on which day the application took place."""
             ),
             base.Input(
                 "Ppm_ApplicationRates",
                 (attrib.Class(np.ndarray), attrib.Scales("other/application"), attrib.Unit("g/ha")),
-                self.default_observer
+                self.default_observer,
+                description="""This indicates for each application indicated by the 
+                [Ppm_AppliedFields](#Ppm_AppliedFields) at which rate the substance with the name of 
+                [SubstanceName](#SubstanceName) was applied."""
             ),
             base.Input(
                 "Ppm_AppliedAreas",
                 (attrib.Class("list[bytes]"), attrib.Scales("other/application"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""For each application indicated by the [Ppm_AppliedFields](#Ppm_AppliedFields), this gives
+                the geometry of the actual applied area in WKB representation. This geometry might be equal to or 
+                smaller and located within the field geometry given by the [Fields_Geometries](#Fields_Geometries). Only
+                the area indicated by the `Ppm_AppliedAreas` is actually applied, allowing to leave in-crop buffers or
+                depict spatial variation of the application relative to the field geometry."""
             ),
             base.Input(
                 "Options_ShowExtendedErrorInformation",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="Specifies whether the module prompts extended information on errors or not."
             ),
             base.Input(
                 "Options_MethodOfRunoffGeneration",
                 (attrib.Class(str), attrib.Scales("global"), attrib.Unit(None), attrib.InList(("PRZM", "FOCUS"))),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies the method used to simulate the amount of run-off. `PRZM` specifies to use PRZM
+                runs for run-off generation, `FOCUS` to use FOCUS Step2 run-off simulations."""
             ),
             base.Input(
                 "Options_UsePreSimulatedPrzmResults",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies using pre-simulated PRZM runs for run-off simulation instead of new PRZM 
+                runs."""
             ),
             base.Input(
                 "Options_UseOnePrzmModelPerGridCell",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies to start an individual PRZM run for every cell to calculate run-off. Enabling 
+                this parameter results in many PRZM runs, resulting in considerably longer simulation runs. Usage of 
+                PRZM for the purpose of run-off generation in off-crop cells should also be seen as experimental."""
             ),
             base.Input(
                 "Options_UseVfsMod",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies whether to use crop-specific VfsMOD lookup tables to simulate run-off 
+                filtering. The [CropParameters_VfsModLookupTables](#CropParameters_VfsModLookupTables) input 
+                parameterizes which lookup table to use for which crop."""
             ),
             base.Input(
                 "CropParameters_Crops",
                 (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""A list of crop names. Each crop has its own set of crop-specific parameters. One 'crop'
+                that should normally be specified is 'OffCrop'. Parameters for 'OffCrop' apply to all areas outside 
+                fields as they are specified by the [Fields_Geometries](#Fields_Geometries)."""
             ),
             base.Input(
                 "CropParameters_PanEvaporationFactors",
                 (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="""The PAN evaporation factor of a crop. Each element of the list refers to the crop at the
+                same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_CanopyInterceptions",
                 (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
-                self.default_observer
+                self.default_observer,
+                description="""The canopy intersection of a crop. Each element of the list refers to the crop at the
+                same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaximumCoverages",
                 (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("%")),
-                self.default_observer
+                self.default_observer,
+                description="""The maximum soil coverage of a crop. Each element of the list refers to the crop at the
+                same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaximumHeights",
                 (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
-                self.default_observer
+                self.default_observer,
+                description="""The maximum height of a crop. Each element of the list refers to the crop at the same 
+                position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaximumRootingDepths",
                 (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
-                self.default_observer
+                self.default_observer,
+                description="""The maximum rooting depth of a crop. Each element of the list refers to the crop at the
+                same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_Fallows",
                 (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="""The fallow parameter of a crop. Each element of the list refers to the crop at the same 
+                position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_Cropping",
                 (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="""The cropping parameter of a crop. Each element of the list refers to the crop at the 
+                same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_Residues",
                 (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="""The residues of a crop. Each element of the list refers to the crop at the same position
+                in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_EmergenceDates",
                 (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The date of a year when a crop emerges. Each element of the list refers to the crop at 
+                the same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaturationDates",
                 (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The date of a year when a crop matures. Each element of the list refers to the crop at 
+                the same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_HarvestDates",
                 (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The date of a year of crop harvest. Each element of the list refers to the crop at the 
+                same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_FallowDates",
                 (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The date of a year when a crop fallows. Each element of the list refers to the crop at 
+                the same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_WaterMitigations",
                 (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies the rate of water mitigation per crop. This factor feeds an exponential 
+                decay function to calculate the run-off reduction from cell to cell. Hence, they should be calibrated to
+                the cell size of the output grid. Each element of the list refers to the crop at the same position in 
+                the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_SedimentMitigations",
                 (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
-                self.default_observer
+                self.default_observer,
+                description="""Specifies the rate of sediment mitigation per crop. This factor feeds an exponential 
+                decay function to calculate the run-off reduction from cell to cell. Hence, they should be calibrated 
+                to the cell size of the output grid. Each element of the list refers to the crop at the same position 
+                in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_VfsModLookupTables",
                 (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="""The file path to a VfsMOD lookup table. Specify `none` if you want to disable the use of 
+                a lookup table for a specific crop. Each element of the list refers to the crop at the same position in 
+                the [CropParameters_Crops](#CropParameters_Crops) input."""
             )
-        ])
-        self._outputs = base.OutputContainer(self, [base.Output("Exposure", store, self)])
+        ))
+        self._outputs = base.OutputContainer(self, (
+            base.Output(
+                "Exposure",
+                store,
+                self,
+                {"data_type": np.float32, "scales": "time/day, space_x/1sqm, space_y/1sqm", "unit": "g/ha"},
+                """Details run-off deposition as generated by PRZM runs per application of a field and after combining
+                the spatially distributed run-off from all applications at the same day.""",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the number of days covered by [Options_StartDate](#Options_StartDate) and 
+                        [Options_EndDate](#Options_EndDate)""",
+                        "the number of meters covered by the [Fields_Extent](#Fields_Extent) in x-direction",
+                        "the number of meters covered by the [Fields_Extent](#Fields_Extent) in y-direction"
+                    ),
+                    "chunks": "for fast retrieval of spatial patterns"
+                }
+            ),
+        ))
         return
 
     def convert_to_przm_date(self, date, max_date):
@@ -529,10 +734,7 @@ class RunOffPrzm(base.Component):
         self.outputs["Exposure"].set_values(
             np.ndarray,
             shape=(simulation_length, raster_cols, raster_rows),
-            data_type=np.float32,
-            chunks=base.chunk_size((1, None, None), (simulation_length, raster_cols, raster_rows)),
-            scales="time/day, space_x/1sqm, space_y/1sqm",
-            unit="g/ha"
+            chunks=base.chunk_size((1, None, None), (simulation_length, raster_cols, raster_rows))
         )
         input_raster = {}
         for raster in glob.iglob(przm_folder + "/**/output/*.tif", recursive=True):
@@ -573,6 +775,7 @@ class RunOffPrzm(base.Component):
         """
         parameters = xml.etree.ElementTree.Element("parameters")
         model = xml.etree.ElementTree.SubElement(parameters, "model")
+        henry_constant = self.inputs["Substance_HenryConstant"].read().values
         xml.etree.ElementTree.SubElement(model, "adsorption_method").text = {
             "linear": "1", "Freundlich": "2", "aged": "3"}[self.inputs["Model_AdsorptionMethod"].read().values]
         xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = "2" if self.inputs[
@@ -586,8 +789,8 @@ class RunOffPrzm(base.Component):
             "Substance_PesticideDissipationRateOfFoliage"].read().values)
         xml.etree.ElementTree.SubElement(substance, "foliar_wash_off_coefficient").text = str(self.inputs[
             "Substance_FoliarWashOffCoefficient"].read().values)
-        xml.etree.ElementTree.SubElement(substance, "henry_constant").text = str(self.inputs[
-            "Substance_HenryConstant"].read().values)
+        if not math.isnan(henry_constant):
+            xml.etree.ElementTree.SubElement(substance, "henry_constant").text = str(henry_constant)
         xml.etree.ElementTree.SubElement(substance, "vapour_pressure").text = str(self.inputs[
             "Substance_VapourPressure"].read().values)
         xml.etree.ElementTree.SubElement(substance, "molecular_weight").text = str(self.inputs[
