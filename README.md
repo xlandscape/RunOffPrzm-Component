@@ -23,15 +23,15 @@ have an arbitrarily coarser resolution. `RunOffPrzm` simulates filtering between
 the FOCUS curve number technique or a
 [vegetative filter strip model](https://abe.ufl.edu/faculty/carpena/vfsmod/index.shtml) (VfsMOD).  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2021-07-08.  
+version of this document is from 2021-07-14.  
 
 ### Built with
-* Landscape Model core version 1.4.14
+* Landscape Model core version 1.5.2
 * PRZM_Runoff version 1.45 (see `Release 1.4\Changelog.txt` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.4.14 or newer. See the Landscape Model
+The component can be used in any Landscape Model based on core version 1.5.2 or newer. See the Landscape Model
 core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
