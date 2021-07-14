@@ -12,7 +12,7 @@ base.documentation.document_component(
     os.path.join(root_folder, "..", "variant", "mc.xml")
 )
 base.documentation.write_changelog(
-    "XSprayDrift component",
+    "RunOffPrzm component",
     RunOffPrzm.RunOffPrzm.VERSION,
     os.path.join(root_folder, "..", "variant", "RunOffPrzm", "CHANGELOG.md")
 )
