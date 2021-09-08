@@ -1,5 +1,15 @@
 # Changelog
-This is the changelog for the RunOffPrzm component. It was automatically created on 2021-07-14.
+This is the changelog for the RunOffPrzm component. It was automatically created on 2021-09-08.
+
+## [2.0.10] - 2021-09-08
+
+### Added
+
+### Changed
+- Renamed LICENSE.txt to LICENSE
+
+### Fixed
+
 
 ## [2.0.9] - 2021-07-14
 
@@ -137,7 +147,7 @@ This is the changelog for the RunOffPrzm component. It was automatically created
 ### Added
 
 ### Changed
-- Added missing use\_vfs\_mod parameter in components.RunOffPrzm
+- Added missing use_vfs_mod parameter in components.RunOffPrzm
 
 ### Fixed
 
@@ -229,7 +239,7 @@ This is the changelog for the RunOffPrzm component. It was automatically created
 ### Changed
 - components.RunOffPrzm clips input arrays to handle null values as zero exposure
 - components.RunOffPrzm module updated to PRZM Runoff v1.31
-- components.RunOffPrzm acknowledges delete\_all\_interim\_results parameter
+- components.RunOffPrzm acknowledges delete_all_interim_results parameter
 
 ### Fixed
 
@@ -290,7 +300,7 @@ This is the changelog for the RunOffPrzm component. It was automatically created
 ### Added
 
 ### Changed
-- components.RunOffPrzm input Fields\_InFieldMargin must be 0
+- components.RunOffPrzm input Fields_InFieldMargin must be 0
 - components.RunOffPrzm in-Crop-Buffer input must be 0
 
 ### Fixed
