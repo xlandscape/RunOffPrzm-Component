@@ -1,5 +1,16 @@
 # Changelog
-This is the changelog for the RunOffPrzm component. It was automatically created on 2021-09-08.
+This is the changelog for the RunOffPrzm component. It was automatically created on 2021-10-15.
+
+## [2.0.11] - 2021-10-15
+
+### Added
+
+### Changed
+- Switched to Google-style docstrings
+- Updated `attrib.Class` definitions to generic types
+
+### Fixed
+
 
 ## [2.0.10] - 2021-09-08
 
@@ -129,7 +140,7 @@ This is the changelog for the RunOffPrzm component. It was automatically created
 ### Changed
 
 ### Fixed
-- components.RunOffPrzm parameterization adapted to newest version (spelling error)
+- components.RunOffPrzm parameterization adapted to the newest version (spelling error)
 
 
 ## [1.3.27] - 2020-05-20
