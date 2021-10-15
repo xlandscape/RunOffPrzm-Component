@@ -1,6 +1,4 @@
-"""
-Class definition for the RunOffPrzm component.
-"""
+"""Class definition for the RunOffPrzm component."""
 from osgeo import gdal, ogr, osr
 import datetime
 import glob
@@ -106,7 +104,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("1.3.24", "components.RunOffPrzm uses base function to call module")
     VERSION.changed("1.3.25", "Added missing use_vfs_mod parameter in components.RunOffPrzm")
     VERSION.changed("1.3.27", "components.RunOffPrzm module updated to PRZM Runoff v1.42")
-    VERSION.fixed("1.3.33", "components.RunOffPrzm parameterization adapted to newest version (spelling error)")
+    VERSION.fixed("1.3.33", "components.RunOffPrzm parameterization adapted to the newest version (spelling error)")
     VERSION.fixed("1.3.35", "components.RunOffPrzm module updated to PRZM Runoff v1.44")
     VERSION.changed("2.0.0", "First independent release")
     VERSION.added("2.0.1", "Changelog and release history")
@@ -122,6 +120,14 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.10", "Renamed LICENSE.txt to LICENSE")
 
     def __init__(self, name, observer, store):
+        """
+        Initializes a RunOffPrzm component.
+
+        Args:
+            name: The name of the component.
+            observer: The default observer of the component.
+            store: The default store of the component.
+        """
         super(RunOffPrzm, self).__init__(name, observer, store)
         self._module = base.Module("PRZM_Runoff", "1.45", "Release 1.4\\Changelog.txt")
         self._inputs = base.InputContainer(self, (
@@ -362,14 +368,14 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Fields_SoilHorizonThicknesses",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("cm")),
+                (attrib.Class(list[float], 1), attrib.Scales("other/soil_horizon"), attrib.Unit("cm")),
                 self.default_observer,
                 description="""A sequence of soil horizon depths from top to bottom. This sequence defines how many
                 soil horizons there are and how they are distributed along the z-axis."""
             ),
             base.Input(
                 "Fields_SoilHorizonBulkDensities",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("g/cm³")),
+                (attrib.Class(list[float], 1), attrib.Scales("other/soil_horizon"), attrib.Unit("g/cm³")),
                 self.default_observer,
                 description="""A sequence of soil horizon bulk densities from top to bottom. This sequence must have the
                 same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
@@ -377,7 +383,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Fields_SoilHorizonOrganicMaterialContents",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
+                (attrib.Class(list[float], 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
                 self.default_observer,
                 description="""A sequence of soil horizon organic material contents from top to bottom. This sequence 
                 must have the same number of elements as the 
@@ -386,7 +392,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Fields_SoilHorizonSandFractions",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
+                (attrib.Class(list[float], 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
                 self.default_observer,
                 description="""A sequence of soil horizon sand fractions from top to bottom. This sequence must have the
                 same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
@@ -394,7 +400,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Fields_SoilHorizonSiltFractions",
-                (attrib.Class("list[float]", 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
+                (attrib.Class(list[float], 1), attrib.Scales("other/soil_horizon"), attrib.Unit("%")),
                 self.default_observer,
                 description="""A sequence of soil horizon silk fractions from top to bottom. This sequence must have the
                 same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
@@ -402,14 +408,14 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Fields_Geometries",
-                (attrib.Class("list[bytes]"), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
+                (attrib.Class(list[bytes]), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
                 self.default_observer,
                 description="""The geometries of in-field areas in WKB representation. Each element refers to a field
                 with its according identifier from the list of [Fields_Ids](#Fields_Ids)."""
             ),
             base.Input(
                 "Fields_Ids",
-                (attrib.Class("list[int]"), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
+                (attrib.Class(list[int]), attrib.Scales("space/base_geometry"), attrib.Unit(None)),
                 self.default_observer,
                 description="""The simulation-wide unique identifiers of fields within the landscape. These identifiers
                 stem from the landscape scenario and are shared among components."""
@@ -423,7 +429,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Fields_Extent",
-                (attrib.Class("tuple[float]"), attrib.Scales("space/extent"), attrib.Unit("metre")),
+                (attrib.Class(tuple[float]), attrib.Scales("space/extent"), attrib.Unit("metre")),
                 self.default_observer,
                 description="""The extent of the simulated landscape. This value has to be consistent with the 
                 [Fields_Geometries](#Fields_Geometries) and the [Fields_FlowGrid](#Fields_FlowGrid) and is projected
@@ -471,7 +477,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "Ppm_AppliedAreas",
-                (attrib.Class("list[bytes]"), attrib.Scales("other/application"), attrib.Unit(None)),
+                (attrib.Class(list[bytes]), attrib.Scales("other/application"), attrib.Unit(None)),
                 self.default_observer,
                 description="""For each application indicated by the [Ppm_AppliedFields](#Ppm_AppliedFields), this gives
                 the geometry of the actual applied area in WKB representation. This geometry might be equal to or 
@@ -517,7 +523,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "CropParameters_Crops",
-                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                (attrib.Class(list[str]), attrib.Scales("other/crop"), attrib.Unit(None)),
                 self.default_observer,
                 description="""A list of crop names. Each crop has its own set of crop-specific parameters. One 'crop'
                 that should normally be specified is 'OffCrop'. Parameters for 'OffCrop' apply to all areas outside 
@@ -525,91 +531,91 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "CropParameters_PanEvaporationFactors",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
+                (attrib.Class(list[float]), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer,
                 description="""The PAN evaporation factor of a crop. Each element of the list refers to the crop at the
                 same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_CanopyInterceptions",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
+                (attrib.Class(list[float]), attrib.Scales("other/crop"), attrib.Unit("cm")),
                 self.default_observer,
                 description="""The canopy intersection of a crop. Each element of the list refers to the crop at the
                 same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaximumCoverages",
-                (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("%")),
+                (attrib.Class(list[int]), attrib.Scales("other/crop"), attrib.Unit("%")),
                 self.default_observer,
                 description="""The maximum soil coverage of a crop. Each element of the list refers to the crop at the
                 same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaximumHeights",
-                (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
+                (attrib.Class(list[int]), attrib.Scales("other/crop"), attrib.Unit("cm")),
                 self.default_observer,
                 description="""The maximum height of a crop. Each element of the list refers to the crop at the same 
                 position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaximumRootingDepths",
-                (attrib.Class("list[int]"), attrib.Scales("other/crop"), attrib.Unit("cm")),
+                (attrib.Class(list[int]), attrib.Scales("other/crop"), attrib.Unit("cm")),
                 self.default_observer,
                 description="""The maximum rooting depth of a crop. Each element of the list refers to the crop at the
                 same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_Fallows",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
+                (attrib.Class(list[float]), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer,
                 description="""The fallow parameter of a crop. Each element of the list refers to the crop at the same 
                 position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_Cropping",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
+                (attrib.Class(list[float]), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer,
                 description="""The cropping parameter of a crop. Each element of the list refers to the crop at the 
                 same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_Residues",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
+                (attrib.Class(list[float]), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer,
                 description="""The residues of a crop. Each element of the list refers to the crop at the same position
                 in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_EmergenceDates",
-                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                (attrib.Class(list[str]), attrib.Scales("other/crop"), attrib.Unit(None)),
                 self.default_observer,
                 description="""The date of a year when a crop emerges. Each element of the list refers to the crop at 
                 the same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_MaturationDates",
-                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                (attrib.Class(list[str]), attrib.Scales("other/crop"), attrib.Unit(None)),
                 self.default_observer,
                 description="""The date of a year when a crop matures. Each element of the list refers to the crop at 
                 the same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_HarvestDates",
-                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                (attrib.Class(list[str]), attrib.Scales("other/crop"), attrib.Unit(None)),
                 self.default_observer,
                 description="""The date of a year of crop harvest. Each element of the list refers to the crop at the 
                 same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_FallowDates",
-                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                (attrib.Class(list[str]), attrib.Scales("other/crop"), attrib.Unit(None)),
                 self.default_observer,
                 description="""The date of a year when a crop fallows. Each element of the list refers to the crop at 
                 the same position in the [CropParameters_Crops](#CropParameters_Crops) input."""
             ),
             base.Input(
                 "CropParameters_WaterMitigations",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
+                (attrib.Class(list[float]), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer,
                 description="""Specifies the rate of water mitigation per crop. This factor feeds an exponential 
                 decay function to calculate the run-off reduction from cell to cell. Hence, they should be calibrated to
@@ -618,7 +624,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "CropParameters_SedimentMitigations",
-                (attrib.Class("list[float]"), attrib.Scales("other/crop"), attrib.Unit("1")),
+                (attrib.Class(list[float]), attrib.Scales("other/crop"), attrib.Unit("1")),
                 self.default_observer,
                 description="""Specifies the rate of sediment mitigation per crop. This factor feeds an exponential 
                 decay function to calculate the run-off reduction from cell to cell. Hence, they should be calibrated 
@@ -627,7 +633,7 @@ class RunOffPrzm(base.Component):
             ),
             base.Input(
                 "CropParameters_VfsModLookupTables",
-                (attrib.Class("list[str]"), attrib.Scales("other/crop"), attrib.Unit(None)),
+                (attrib.Class(list[str]), attrib.Scales("other/crop"), attrib.Unit(None)),
                 self.default_observer,
                 description="""The file path to a VfsMOD lookup table. Specify `none` if you want to disable the use of 
                 a lookup table for a specific crop. Each element of the list refers to the crop at the same position in 
@@ -654,14 +660,17 @@ class RunOffPrzm(base.Component):
                 }
             ),
         ))
-        return
 
     def convert_to_przm_date(self, date, max_date):
         """
         Converts a date to a PRZM date.
-        :param date: The actual date.
-        :param max_date: The latest date of the simulated date range.
-        :return: The date mapped as PRZM date.
+
+        Args:
+            date: The actual date.
+            max_date: The latest date of the simulated date range.
+
+        Returns:
+            The date mapped as PRZM date.
         """
         return datetime.datetime(self.convert_to_przm_year(date.year, max_date.year), date.month, date.day).date()
 
@@ -669,9 +678,13 @@ class RunOffPrzm(base.Component):
     def convert_to_przm_year(year, max_year):
         """
         Converts a year to a PRZM year.
-        :param year: The actual year.
-        :param max_year: The latest year of the simulated date range.
-        :return: The year mapped as PRZM year.
+
+        Args:
+            year: The actual year.
+            max_year: The latest year of the simulated date range.
+
+        Returns:
+            The year mapped as PRZM year.
         """
         if max_year <= 1999:
             return year
@@ -683,7 +696,9 @@ class RunOffPrzm(base.Component):
     def run(self):
         """
         Runs the component.
-        :return: Nothing.
+
+        Returns:
+            Nothing.
         """
         exe = os.path.join(os.path.dirname(__file__), "Release 1.4", "PRZM_Runoff.exe")
         exe2 = os.path.join(os.path.dirname(__file__), "Release 1.4", "HydroFilter_Runoff.exe")
@@ -726,9 +741,9 @@ class RunOffPrzm(base.Component):
         self.write_applied_area_raster(applied_areas_path, spatial_info[1])
         self.write_crop_parameters(crop_parameterization)
         # noinspection SpellCheckingInspection
-        base.run_process((exe, "-ifile", przm_config, przm_folder), None, self.default_observer)
+        base.run_process((exe, "-ifile", przm_config, przm_folder), processing_path, self.default_observer)
         # noinspection SpellCheckingInspection
-        base.run_process((exe2, "-ifile", przm_config, przm_folder), None, self.default_observer)
+        base.run_process((exe2, "-ifile", przm_config, przm_folder), processing_path, self.default_observer)
         if not os.path.exists(os.path.join(przm_folder, "successful.txt")):
             raise Exception("Run-off run was not successful")
         simulation_start = self.inputs["Options_StartDate"].read().values
@@ -762,22 +777,25 @@ class RunOffPrzm(base.Component):
                 exposure_array = np.flipud(exposure_array).clip(0)
                 exposure += np.transpose(exposure_array)
             self.outputs["Exposure"].set_values(exposure, slices=data_slice, create=False, calculate_max=True)
-        return
 
     def write_configuration_xml(self, ppp_repository, cropping_calendar, ppm_calendar, crop_parameterization,
                                 field_discrete, field_parameters, flow_grid, przm_weather, output_file):
         """
         Writes the input parameterization for the module.
-        :param ppp_repository: The file path of the PPP repository.
-        :param cropping_calendar: The file path of the cropping calendar.
-        :param ppm_calendar: The file path of the PPM calendar.
-        :param crop_parameterization: The file path of the crop parameterization.
-        :param field_discrete: The file path of the fields.
-        :param field_parameters: The file path of the field parameters.
-        :param flow_grid: The file path of the flow grid.
-        :param przm_weather: The file path of the weather.
-        :param output_file: The file path of the module output.
-        :return: Nothing.
+
+        Args:
+            ppp_repository: The file path of the PPP repository.
+            cropping_calendar: The file path of the cropping calendar.
+            ppm_calendar: The file path of the PPM calendar.
+            crop_parameterization: The file path of the crop parameterization.
+            field_discrete: The file path of the fields.
+            field_parameters: The file path of the field parameters.
+            flow_grid: The file path of the flow grid.
+            przm_weather: The file path of the weather.
+            output_file: The file path of the module output.
+
+        Returns:
+            Nothing.
         """
         parameters = xml.etree.ElementTree.Element("parameters")
         model = xml.etree.ElementTree.SubElement(parameters, "model")
@@ -869,13 +887,16 @@ class RunOffPrzm(base.Component):
         xml.etree.ElementTree.SubElement(options, "use_vfs_mod").text = "1" if self.inputs[
             "Options_UseVfsMod"].read().values else "0"
         xml.etree.ElementTree.ElementTree(parameters).write(output_file, encoding="utf-8", xml_declaration=True)
-        return
 
     def write_przm_weather_file(self, output_file):
         """
         Prepares the weather input.
-        :param output_file: The file path of the weather input.
-        :return: Nothing.
+
+        Args:
+            output_file: The file path of the weather input.
+
+        Returns:
+            Nothing.
         """
         start_date = self.inputs["Options_StartDate"].read().values
         end_date = self.inputs["Options_EndDate"].read().values
@@ -898,13 +919,16 @@ class RunOffPrzm(base.Component):
                 wind_speed.values[i] * 100,
                 radiation.values[i] / 41.84))
         weather_file.close()
-        return
 
     def write_field_parameters_file(self, output_file):
         """
         Prepares the field parameters.
-        :param output_file: Te file path of the field parameters.
-        :return: Nothing.
+
+        Args:
+            output_file: Te file path of the field parameters.
+
+        Returns:
+            Nothing.
         """
         applied_fields = self.inputs["Ppm_AppliedFields"].read().values
         slope = self.inputs["Fields_Slope"].read()
@@ -934,13 +958,16 @@ class RunOffPrzm(base.Component):
                 xml.etree.ElementTree.SubElement(soil_horizon, "silt").text = str(
                     soil_horizon_silt_fractions.values[soilHorizonId])
         xml.etree.ElementTree.ElementTree(fields).write(output_file, encoding="utf-8", xml_declaration=True)
-        return
 
     def write_field_raster(self, output_file):
         """
         Prepares the field raster.
-        :param output_file: The file path of the field raster.
-        :return: Nothing.
+
+        Args:
+            output_file: The file path of the field raster.
+
+        Returns:
+            Nothing.
         """
         applied_fields = self.inputs["Ppm_AppliedFields"].read().values
         field_geometries = self.inputs["Fields_Geometries"].read()
@@ -978,13 +1005,16 @@ class RunOffPrzm(base.Component):
         raster_data_set.SetProjection(crs.values)
         gdal.RasterizeLayer(raster_data_set, [1], ogr_layer, burn_values=[0], options=["ATTRIBUTE=Id"])
         del raster_data_set
-        return
 
     def write_cropping_statistics(self, output_file):
         """
         Prepares the cropping statistic.
-        :param output_file: The file path of the cropping statistic.
-        :return: Nothing.
+
+        Args:
+            output_file: The file path of the cropping statistic.
+
+        Returns:
+            Nothing.
         """
         applied_fields_input = self.inputs["Ppm_AppliedFields"].read().values
         cropping_statistics = xml.etree.ElementTree.Element("CroppingStatistic")
@@ -998,13 +1028,16 @@ class RunOffPrzm(base.Component):
         xml.etree.ElementTree.ElementTree(cropping_statistics).write(output_file,
                                                                      encoding="utf-8",
                                                                      xml_declaration=True)
-        return
 
     def write_ppp_repository(self, output_file):
         """
         Prepares the PPP repository.
-        :param output_file: The file path of the PPP repository.
-        :return: Nothing.
+
+        Args:
+            output_file: The file path of the PPP repository.
+
+        Returns:
+            Nothing.
         """
         ppp_repository = xml.etree.ElementTree.Element("PppRepository")
         ppp = xml.etree.ElementTree.SubElement(ppp_repository, "PPP")
@@ -1014,15 +1047,18 @@ class RunOffPrzm(base.Component):
         xml.etree.ElementTree.SubElement(active_ingredient, "Name").text = self.inputs["SubstanceName"].read().values
         xml.etree.ElementTree.SubElement(active_ingredient, "MassFraction").text = "1"
         xml.etree.ElementTree.ElementTree(ppp_repository).write(output_file, encoding="utf-8", xml_declaration=True)
-        return
 
     def write_ppm_calendar(self, output_file, applied_areas_path, spatial_ids):
         """
         Prepares the PPM Calendar.
-        :param output_file: The file path of the PPM calendar.
-        :param applied_areas_path: The file path to the applied geometries.
-        :param spatial_ids: Spatial identifiers of unique spatial extents of applications.
-        :return: Nothing.
+
+        Args:
+            output_file: The file path of the PPM calendar.
+            applied_areas_path: The file path to the applied geometries.
+            spatial_ids: Spatial identifiers of unique spatial extents of applications.
+
+        Returns:
+            Nothing.
         """
         applied_fields = self.inputs["Ppm_AppliedFields"].read().values
         application_dates = self.inputs["Ppm_ApplicationDates"].read().values
@@ -1040,13 +1076,16 @@ class RunOffPrzm(base.Component):
             xml.etree.ElementTree.SubElement(spray_application_element, "ApplicationExtent").text = os.path.join(
                 applied_areas_path, str(spatial_ids[i]).replace("-", "a") + ".tif")
         xml.etree.ElementTree.ElementTree(ppm_calendar).write(output_file, encoding="utf-8", xml_declaration=True)
-        return
 
     def write_crop_parameters(self, output_file):
         """
         Prepares the crop parameters.
-        :param output_file: The file path of the crop parameters.
-        :return: Nothing.
+
+        Args:
+            output_file: The file path of the crop parameters.
+
+        Returns:
+            Nothing.
         """
         crops = xml.etree.ElementTree.Element("crops")
         pan_evaporation_factors = self.inputs["CropParameters_PanEvaporationFactors"].read().values
@@ -1083,14 +1122,17 @@ class RunOffPrzm(base.Component):
             xml.etree.ElementTree.SubElement(crop, "sediment_mitigation").text = str(sediment_mitigations[i])
             xml.etree.ElementTree.SubElement(crop, "VFS_Mod_lookup_table").text = vfs_mod_lookup_tables[i]
         xml.etree.ElementTree.ElementTree(crops).write(output_file, encoding="utf-8", xml_declaration=True)
-        return
 
     def write_applied_area_raster(self, output_path, named_geometries):
         """
         Prepares the applied areas.
-        :param output_path: The file path of the applied area raster.
-        :param named_geometries: A dictionary of named geometries to write as raster.
-        :return: Nothing.
+
+        Args:
+            output_path: The file path of the applied area raster.
+            named_geometries: A dictionary of named geometries to write as raster.
+
+        Returns:
+            Nothing.
         """
         os.makedirs(output_path)
         extent = self.inputs["Fields_Extent"].read().values
@@ -1119,12 +1161,13 @@ class RunOffPrzm(base.Component):
             raster_data_set.SetProjection(crs.values)
             gdal.RasterizeLayer(raster_data_set, [1], ogr_layer, burn_values=[1])
             del raster_data_set
-        return
 
     def collect_spatial_application_info(self):
         """
         Collects information about the spatial extents of applied areas.
-        :return: A tuple containing a hash for each base geometry and a dictionary with the geometry per hash.
+
+        Returns:
+            A tuple containing a hash for each base geometry and a dictionary with the geometry per hash.
         """
         applied_geometries = self.inputs["Ppm_AppliedAreas"].read().values
         hashes = [0] * len(applied_geometries)
