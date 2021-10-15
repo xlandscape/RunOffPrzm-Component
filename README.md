@@ -23,16 +23,16 @@ have an arbitrarily coarser resolution. `RunOffPrzm` simulates filtering between
 the FOCUS curve number technique or a
 [vegetative filter strip model](https://abe.ufl.edu/faculty/carpena/vfsmod/index.shtml) (VfsMOD).  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2021-09-08.  
+version of this document is from 2021-10-15.  
 
 ### Built with
-* Landscape Model core version 1.6.2
+* Landscape Model core version 1.9.1
 * PRZM_Runoff version 1.45 (see `Release 1.4\Changelog.txt` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.6.2 or newer. See the Landscape Model
-core's `README` for general tips on how to add a component to a Landscape Model.
+The component can be used in any Landscape Model based on core version 1.9.1 or newer. See the Landscape
+Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
 A model developer that wants to add the `RunOffPrzm` component to a Landscape Model needs to set up the general 
@@ -96,7 +96,7 @@ type="bool">true</Options_ShowExtendedErrorInformation>
   <Weather_Precipitation>
     <FromOutput component="Weather"
 output="PRECIPITATION" />
-    <Extension module="extend" class="CoordinateTransform">
+    <Extension module="extension" class="CoordinateTransform">
 <Transformation_type>date</Transformation_type>
       <Offset>1975-01-01</Offset>
     </Extension>
@@ -104,7 +104,7 @@ output="PRECIPITATION" />
   <Weather_ET0>
     <FromOutput component="Weather" output="ET0" />
     <Extension
-module="extend" class="CoordinateTransform">
+module="extension" class="CoordinateTransform">
       <Transformation_type>date</Transformation_type>
 <Offset>1975-01-01</Offset>
     </Extension>
@@ -112,7 +112,7 @@ module="extend" class="CoordinateTransform">
   <Weather_Temperature>
     <FromOutput
 component="Weather" output="TEMPERATURE_AVG" />
-    <Extension module="extend" class="CoordinateTransform">
+    <Extension module="extension" class="CoordinateTransform">
 <Transformation_type>date</Transformation_type>
       <Offset>1975-01-01</Offset>
     </Extension>
@@ -120,7 +120,7 @@ component="Weather" output="TEMPERATURE_AVG" />
   <Weather_WindSpeed>
     <FromOutput component="Weather" output="WINDSPEED" />
     <Extension
-module="extend" class="CoordinateTransform">
+module="extension" class="CoordinateTransform">
       <Transformation_type>date</Transformation_type>
 <Offset>1975-01-01</Offset>
     </Extension>
@@ -128,7 +128,7 @@ module="extend" class="CoordinateTransform">
   <Weather_SolarRadiation>
     <FromOutput
 component="Weather" output="RADIATION" />
-    <Extension module="extend" class="CoordinateTransform">
+    <Extension module="extension" class="CoordinateTransform">
 <Transformation_type>date</Transformation_type>
       <Offset>1975-01-01</Offset>
     </Extension>
@@ -488,7 +488,7 @@ The physical unit of the `Fields_Slope` input values is `%`.
 #### Fields_SoilHorizonThicknesses
 A sequence of soil horizon depths from top to bottom. This sequence defines how many
 soil horizons there are and how they are distributed along the z-axis.  
-`Fields_SoilHorizonThicknesses` expects its values to be of type `list[float]`.
+`Fields_SoilHorizonThicknesses` expects its values to be of type `list`.
 Values have to refer to the `other/soil_horizon` scale.
 The physical unit of the `Fields_SoilHorizonThicknesses` input values is `cm`.
 
@@ -496,7 +496,7 @@ The physical unit of the `Fields_SoilHorizonThicknesses` input values is `cm`.
 A sequence of soil horizon bulk densities from top to bottom. This sequence must have the
 same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
 Elements refer to the same soil horizon (in the same order) as the soil horizons specified there.  
-`Fields_SoilHorizonBulkDensities` expects its values to be of type `list[float]`.
+`Fields_SoilHorizonBulkDensities` expects its values to be of type `list`.
 Values have to refer to the `other/soil_horizon` scale.
 The physical unit of the `Fields_SoilHorizonBulkDensities` input values is `g/cm³`.
 
@@ -505,7 +505,7 @@ A sequence of soil horizon organic material contents from top to bottom. This se
 must have the same number of elements as the 
 [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence. Elements refer to the same 
 soil horizon (in the same order) as the soil horizons specified there.  
-`Fields_SoilHorizonOrganicMaterialContents` expects its values to be of type `list[float]`.
+`Fields_SoilHorizonOrganicMaterialContents` expects its values to be of type `list`.
 Values have to refer to the `other/soil_horizon` scale.
 The physical unit of the `Fields_SoilHorizonOrganicMaterialContents` input values is `%`.
 
@@ -513,7 +513,7 @@ The physical unit of the `Fields_SoilHorizonOrganicMaterialContents` input value
 A sequence of soil horizon sand fractions from top to bottom. This sequence must have the
 same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
 Elements refer to the same soil horizon (in the same order) as the soil horizons specified there.  
-`Fields_SoilHorizonSandFractions` expects its values to be of type `list[float]`.
+`Fields_SoilHorizonSandFractions` expects its values to be of type `list`.
 Values have to refer to the `other/soil_horizon` scale.
 The physical unit of the `Fields_SoilHorizonSandFractions` input values is `%`.
 
@@ -521,21 +521,21 @@ The physical unit of the `Fields_SoilHorizonSandFractions` input values is `%`.
 A sequence of soil horizon silk fractions from top to bottom. This sequence must have the
 same number of elements as the [Fields_SoilHorizonThicknesses](#Fields_SoilHorizonThicknesses) sequence.
 Elements refer to the same soil horizon (in the same order) as the soil horizons specified there.  
-`Fields_SoilHorizonSiltFractions` expects its values to be of type `list[float]`.
+`Fields_SoilHorizonSiltFractions` expects its values to be of type `list`.
 Values have to refer to the `other/soil_horizon` scale.
 The physical unit of the `Fields_SoilHorizonSiltFractions` input values is `%`.
 
 #### Fields_Geometries
 The geometries of in-field areas in WKB representation. Each element refers to a field
 with its according identifier from the list of [Fields_Ids](#Fields_Ids).  
-`Fields_Geometries` expects its values to be of type `list[bytes]`.
+`Fields_Geometries` expects its values to be of type `list`.
 Values have to refer to the `space/base_geometry` scale.
 Values of the `Fields_Geometries` input may not have a physical unit.
 
 #### Fields_Ids
 The simulation-wide unique identifiers of fields within the landscape. These identifiers
 stem from the landscape scenario and are shared among components.  
-`Fields_Ids` expects its values to be of type `list[int]`.
+`Fields_Ids` expects its values to be of type `list`.
 Values have to refer to the `space/base_geometry` scale.
 Values of the `Fields_Ids` input may not have a physical unit.
 
@@ -550,7 +550,7 @@ Values of the `Fields_Crs` input may not have a physical unit.
 The extent of the simulated landscape. This value has to be consistent with the 
 [Fields_Geometries](#Fields_Geometries) and the [Fields_FlowGrid](#Fields_FlowGrid) and is projected
 in the [Fields_Crs](#Fields_Crs). The landscape scenario normally takes care of that.  
-`Fields_Extent` expects its values to be of type `tuple[float]`.
+`Fields_Extent` expects its values to be of type `tuple`.
 Values have to refer to the `space/extent` scale.
 The physical unit of the `Fields_Extent` input values is `metre`.
 
@@ -600,7 +600,7 @@ the geometry of the actual applied area in WKB representation. This geometry mig
 smaller and located within the field geometry given by the [Fields_Geometries](#Fields_Geometries). Only
 the area indicated by the `Ppm_AppliedAreas` is actually applied, allowing to leave in-crop buffers or
 depict spatial variation of the application relative to the field geometry.  
-`Ppm_AppliedAreas` expects its values to be of type `list[bytes]`.
+`Ppm_AppliedAreas` expects its values to be of type `list`.
 Values have to refer to the `other/application` scale.
 Values of the `Ppm_AppliedAreas` input may not have a physical unit.
 
@@ -645,91 +645,91 @@ Values of the `Options_UseVfsMod` input may not have a physical unit.
 A list of crop names. Each crop has its own set of crop-specific parameters. One 'crop'
 that should normally be specified is 'OffCrop'. Parameters for 'OffCrop' apply to all areas outside 
 fields as they are specified by the [Fields_Geometries](#Fields_Geometries).  
-`CropParameters_Crops` expects its values to be of type `list[str]`.
+`CropParameters_Crops` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 Values of the `CropParameters_Crops` input may not have a physical unit.
 
 #### CropParameters_PanEvaporationFactors
 The PAN evaporation factor of a crop. Each element of the list refers to the crop at the
 same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_PanEvaporationFactors` expects its values to be of type `list[float]`.
+`CropParameters_PanEvaporationFactors` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_PanEvaporationFactors` input values is `1`.
 
 #### CropParameters_CanopyInterceptions
 The canopy intersection of a crop. Each element of the list refers to the crop at the
 same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_CanopyInterceptions` expects its values to be of type `list[float]`.
+`CropParameters_CanopyInterceptions` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_CanopyInterceptions` input values is `cm`.
 
 #### CropParameters_MaximumCoverages
 The maximum soil coverage of a crop. Each element of the list refers to the crop at the
 same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_MaximumCoverages` expects its values to be of type `list[int]`.
+`CropParameters_MaximumCoverages` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_MaximumCoverages` input values is `%`.
 
 #### CropParameters_MaximumHeights
 The maximum height of a crop. Each element of the list refers to the crop at the same 
 position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_MaximumHeights` expects its values to be of type `list[int]`.
+`CropParameters_MaximumHeights` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_MaximumHeights` input values is `cm`.
 
 #### CropParameters_MaximumRootingDepths
 The maximum rooting depth of a crop. Each element of the list refers to the crop at the
 same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_MaximumRootingDepths` expects its values to be of type `list[int]`.
+`CropParameters_MaximumRootingDepths` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_MaximumRootingDepths` input values is `cm`.
 
 #### CropParameters_Fallows
 The fallow parameter of a crop. Each element of the list refers to the crop at the same 
 position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_Fallows` expects its values to be of type `list[float]`.
+`CropParameters_Fallows` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_Fallows` input values is `1`.
 
 #### CropParameters_Cropping
 The cropping parameter of a crop. Each element of the list refers to the crop at the 
 same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_Cropping` expects its values to be of type `list[float]`.
+`CropParameters_Cropping` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_Cropping` input values is `1`.
 
 #### CropParameters_Residues
 The residues of a crop. Each element of the list refers to the crop at the same position
 in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_Residues` expects its values to be of type `list[float]`.
+`CropParameters_Residues` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_Residues` input values is `1`.
 
 #### CropParameters_EmergenceDates
 The date of a year when a crop emerges. Each element of the list refers to the crop at 
 the same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_EmergenceDates` expects its values to be of type `list[str]`.
+`CropParameters_EmergenceDates` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 Values of the `CropParameters_EmergenceDates` input may not have a physical unit.
 
 #### CropParameters_MaturationDates
 The date of a year when a crop matures. Each element of the list refers to the crop at 
 the same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_MaturationDates` expects its values to be of type `list[str]`.
+`CropParameters_MaturationDates` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 Values of the `CropParameters_MaturationDates` input may not have a physical unit.
 
 #### CropParameters_HarvestDates
 The date of a year of crop harvest. Each element of the list refers to the crop at the 
 same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_HarvestDates` expects its values to be of type `list[str]`.
+`CropParameters_HarvestDates` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 Values of the `CropParameters_HarvestDates` input may not have a physical unit.
 
 #### CropParameters_FallowDates
 The date of a year when a crop fallows. Each element of the list refers to the crop at 
 the same position in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_FallowDates` expects its values to be of type `list[str]`.
+`CropParameters_FallowDates` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 Values of the `CropParameters_FallowDates` input may not have a physical unit.
 
@@ -738,7 +738,7 @@ Specifies the rate of water mitigation per crop. This factor feeds an exponentia
 decay function to calculate the run-off reduction from cell to cell. Hence, they should be calibrated to
 the cell size of the output grid. Each element of the list refers to the crop at the same position in 
 the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_WaterMitigations` expects its values to be of type `list[float]`.
+`CropParameters_WaterMitigations` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_WaterMitigations` input values is `1`.
 
@@ -747,7 +747,7 @@ Specifies the rate of sediment mitigation per crop. This factor feeds an exponen
 decay function to calculate the run-off reduction from cell to cell. Hence, they should be calibrated 
 to the cell size of the output grid. Each element of the list refers to the crop at the same position 
 in the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_SedimentMitigations` expects its values to be of type `list[float]`.
+`CropParameters_SedimentMitigations` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 The physical unit of the `CropParameters_SedimentMitigations` input values is `1`.
 
@@ -755,7 +755,7 @@ The physical unit of the `CropParameters_SedimentMitigations` input values is `1
 The file path to a VfsMOD lookup table. Specify `none` if you want to disable the use of 
 a lookup table for a specific crop. Each element of the list refers to the crop at the same position in 
 the [CropParameters_Crops](#CropParameters_Crops) input.  
-`CropParameters_VfsModLookupTables` expects its values to be of type `list[str]`.
+`CropParameters_VfsModLookupTables` expects its values to be of type `list`.
 Values have to refer to the `other/crop` scale.
 Values of the `CropParameters_VfsModLookupTables` input may not have a physical unit.
 
