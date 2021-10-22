@@ -1,5 +1,15 @@
 # Changelog
-This is the changelog for the RunOffPrzm component. It was automatically created on 2021-10-15.
+This is the changelog for the RunOffPrzm component. It was automatically created on 2021-10-22.
+
+## [2.0.12] - 2021-10-22
+
+### Added
+
+### Changed
+- Replaced GDAL constants by numerical values
+
+### Fixed
+
 
 ## [2.0.11] - 2021-10-15
 
