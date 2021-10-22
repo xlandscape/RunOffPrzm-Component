@@ -773,7 +773,7 @@ class RunOffPrzm(base.Component):
             exposure = np.zeros((1, raster_cols, raster_rows))
             data_slice = (slice(runoff_day, runoff_day + 1), slice(0, raster_cols), slice(0, raster_rows))
             for raster in raster_inputs:
-                exposure_raster = gdal.Open(raster, gdal.GA_ReadOnly)
+                exposure_raster = gdal.Open(raster, 0)
                 exposure_raster_band = exposure_raster.GetRasterBand(1)
                 exposure_array = exposure_raster_band.ReadAsArray()
                 del exposure_raster
@@ -996,12 +996,7 @@ class RunOffPrzm(base.Component):
         raster_cols = int(round(extent[1] - extent[0]))
         raster_rows = int(round(extent[3] - extent[2]))
         raster_driver = gdal.GetDriverByName("GTiff")
-        raster_data_set = raster_driver.Create(output_file,
-                                               raster_cols,
-                                               raster_rows,
-                                               1,
-                                               gdal.GDT_UInt16,
-                                               ["COMPRESS=LZW"])
+        raster_data_set = raster_driver.Create(output_file, raster_cols, raster_rows, 1, 2, ["COMPRESS=LZW"])
         raster_data_set.SetGeoTransform((extent[0], 1, 0, extent[3], 0, -1))
         raster_band = raster_data_set.GetRasterBand(1)
         raster_band.SetNoDataValue(65535)
@@ -1153,11 +1148,13 @@ class RunOffPrzm(base.Component):
             applied_field = ogr.Feature(ogr_layer_definition)
             applied_field.SetGeometry(ogr.CreateGeometryFromWkb(applied_geometry))
             ogr_layer.CreateFeature(applied_field)
-            raster_data_set = raster_driver.Create(os.path.join(output_path, str(i).replace("-", "a") + ".tif"),
-                                                   raster_cols, raster_rows,
-                                                   1,
-                                                   gdal.GDT_Byte,
-                                                   ["COMPRESS=LZW"])
+            raster_data_set = raster_driver.Create(
+                os.path.join(output_path, str(i).replace("-", "a") + ".tif"),
+                raster_cols, raster_rows,
+                1,
+                1,
+                ["COMPRESS=LZW"]
+            )
             raster_data_set.SetGeoTransform((extent[0], 1, 0, extent[3], 0, -1))
             raster_band = raster_data_set.GetRasterBand(1)
             raster_band.SetNoDataValue(0)
