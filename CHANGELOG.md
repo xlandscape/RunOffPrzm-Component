@@ -1,5 +1,15 @@
 # Changelog
-This is the changelog for the RunOffPrzm component. It was automatically created on 2021-10-22.
+This is the changelog for the RunOffPrzm component. It was automatically created on 2021-12-30.
+
+## [2.0.13] - 2021-12-30
+
+### Added
+
+### Changed
+- Output scale order (y,x,t instead of t,x,y)
+
+### Fixed
+
 
 ## [2.0.12] - 2021-10-22
 

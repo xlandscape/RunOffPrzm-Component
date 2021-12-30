@@ -23,6 +23,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.13", "2021-12-30"),
         base.VersionInfo("2.0.12", "2021-10-22"),
         base.VersionInfo("2.0.11", "2021-10-15"),
         base.VersionInfo("2.0.10", "2021-09-08"),
@@ -123,6 +124,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.11", "Switched to Google-style docstrings")
     VERSION.changed("2.0.11", "Updated `attrib.Class` definitions to generic types")
     VERSION.changed("2.0.12", "Replaced GDAL constants by numerical values")
+    VERSION.changed("2.0.13", "Output scale order (y,x,t instead of t,x,y)")
 
     def __init__(self, name, observer, store):
         """
