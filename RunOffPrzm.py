@@ -23,6 +23,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.0", "2022-01-05"),
         base.VersionInfo("2.0.13", "2021-12-30"),
         base.VersionInfo("2.0.12", "2021-10-22"),
         base.VersionInfo("2.0.11", "2021-10-15"),
@@ -78,8 +79,6 @@ class RunOffPrzm(base.Component):
     VERSION.roadmap.extend((
         """Documentation of the component needs to be checked and improved
         ([#1](https://gitlab.bayer.com/aqrisk-landscape/runoffprzm-component/-/issues/1))""",
-        """PRZM GUI should be started in the background
-        ([#7](https://gitlab.bayer.com/aqrisk-landscape/runoffprzm-component/-/issues/7))""",
     ))
 
     # CHANGELOG
@@ -125,6 +124,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.11", "Updated `attrib.Class` definitions to generic types")
     VERSION.changed("2.0.12", "Replaced GDAL constants by numerical values")
     VERSION.changed("2.0.13", "Output scale order (y,x,t instead of t,x,y)")
+    VERSION.changed("2.1.0", "Updated module to version 1.47")
 
     def __init__(self, name, observer, store):
         """
@@ -136,7 +136,7 @@ class RunOffPrzm(base.Component):
             store: The default store of the component.
         """
         super(RunOffPrzm, self).__init__(name, observer, store)
-        self._module = base.Module("PRZM_Runoff", "1.45", "Release 1.4\\Changelog.txt")
+        self._module = base.Module("PRZM_Runoff", "1.47", "Release 1.4\\Changelog.txt")
         self._inputs = base.InputContainer(self, (
             base.Input(
                 "ProcessingPath",

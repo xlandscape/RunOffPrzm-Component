@@ -82,3 +82,9 @@ Minor bug fixes
 
 version 1.45
 An error which caused an crash of the programm when VFSMod lookup tables were used was fixed.
+
+version 1.46
+Less warning messages are produced when vfsmod is used to save time 
+
+version 1.47
+PRZM_Runoff.exe gives the focus back to the window which had it before, after PRZM has been started.
