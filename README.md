@@ -23,15 +23,15 @@ have an arbitrarily coarser resolution. `RunOffPrzm` simulates filtering between
 the FOCUS curve number technique or a
 [vegetative filter strip model](https://abe.ufl.edu/faculty/carpena/vfsmod/index.shtml) (VfsMOD).  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2021-12-30.  
+version of this document is from 2022-01-05.  
 
 ### Built with
-* Landscape Model core version 1.12
-* PRZM_Runoff version 1.45 (see `Release 1.4\Changelog.txt` for details)
+* Landscape Model core version 1.12.3
+* PRZM_Runoff version 1.47 (see `Release 1.4\Changelog.txt` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.12 or newer. See the Landscape
+The component can be used in any Landscape Model based on core version 1.12.3 or newer. See the Landscape
 Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
@@ -801,8 +801,6 @@ The physical unit of the values is `g/ha`.
 The following changes will be part of future `RunOffPrzm` versions:
 * Documentation of the component needs to be checked and improved
 ([#1](https://gitlab.bayer.com/aqrisk-landscape/runoffprzm-component/-/issues/1))
-* PRZM GUI should be started in the background
-([#7](https://gitlab.bayer.com/aqrisk-landscape/runoffprzm-component/-/issues/7))
 
 
 ## Contributing
