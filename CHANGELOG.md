@@ -1,5 +1,15 @@
 # Changelog
-This is the changelog for the RunOffPrzm component. It was automatically created on 2021-12-30.
+This is the changelog for the RunOffPrzm component. It was automatically created on 2022-01-05.
+
+## [2.1] - 2022-01-05
+
+### Added
+
+### Changed
+- Updated module to version 1.47
+
+### Fixed
+
 
 ## [2.0.13] - 2021-12-30
 
