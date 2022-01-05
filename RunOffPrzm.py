@@ -136,7 +136,7 @@ class RunOffPrzm(base.Component):
             store: The default store of the component.
         """
         super(RunOffPrzm, self).__init__(name, observer, store)
-        self._module = base.Module("PRZM_Runoff", "1.45", "Release 1.4\\Changelog.txt")
+        self._module = base.Module("PRZM_Runoff", "1.47", "Release 1.4\\Changelog.txt")
         self._inputs = base.InputContainer(self, (
             base.Input(
                 "ProcessingPath",
