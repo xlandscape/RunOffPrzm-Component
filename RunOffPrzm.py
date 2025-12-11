@@ -23,6 +23,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.1", "2025-12-11"),
         base.VersionInfo("2.1.0", "2022-01-05"),
         base.VersionInfo("2.0.13", "2021-12-30"),
         base.VersionInfo("2.0.12", "2021-10-22"),
@@ -125,6 +126,11 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.12", "Replaced GDAL constants by numerical values")
     VERSION.changed("2.0.13", "Output scale order (y,x,t instead of t,x,y)")
     VERSION.changed("2.1.0", "Updated module to version 1.47")
+    VERSION.changed("2.1.0", "Updated module to version 1.47")
+    VERSION.added("2.1.1", "Default value to exposure output array initialization")
+    VERSION.added("2.1.1", "Documentation of repository information")
+    VERSION.changed("2.1.1", "Module metadata")
+    VERSION.changed("2.1.1", "Switched to strict indexing of weather inputs")
 
     def __init__(self, name, observer, store):
         """
@@ -136,7 +142,7 @@ class RunOffPrzm(base.Component):
             store: The default store of the component.
         """
         super(RunOffPrzm, self).__init__(name, observer, store)
-        self._module = base.Module("PRZM_Runoff", "1.47", "Release 1.4\\Changelog.txt")
+        self._module = base.Module("PRZM_Runoff", "1.47", "module", None, None, changelog="Release 1.4\\Changelog.txt")
         self._inputs = base.InputContainer(self, (
             base.Input(
                 "ProcessingPath",
@@ -763,7 +769,8 @@ class RunOffPrzm(base.Component):
             np.ndarray,
             shape=(raster_rows, raster_cols, simulation_length),
             chunks=base.chunk_size((None, None, 1), (raster_rows, raster_cols, simulation_length)),
-            offset=(extent[2], extent[0], simulation_start)
+            offset=(extent[2], extent[0], simulation_start),
+            default=0
         )
         input_raster = {}
         for raster in glob.iglob(przm_folder + "/**/output/*.tif", recursive=True):
@@ -908,11 +915,11 @@ class RunOffPrzm(base.Component):
         """
         start_date = self.inputs["Options_StartDate"].read().values
         end_date = self.inputs["Options_EndDate"].read().values
-        precipitation = self._inputs["Weather_Precipitation"].read()
-        et0 = self._inputs["Weather_ET0"].read()
-        temperature = self._inputs["Weather_Temperature"].read()
-        wind_speed = self._inputs["Weather_WindSpeed"].read()
-        radiation = self._inputs["Weather_SolarRadiation"].read()
+        precipitation = self._inputs["Weather_Precipitation"].read(select={"time/day": "all"})
+        et0 = self._inputs["Weather_ET0"].read(select={"time/day": "all"})
+        temperature = self._inputs["Weather_Temperature"].read(select={"time/day": "all"})
+        wind_speed = self._inputs["Weather_WindSpeed"].read(select={"time/day": "all"})
+        radiation = self._inputs["Weather_SolarRadiation"].read(select={"time/day": "all"})
         weather_file = open(output_file, "w")
         for i in range((end_date - start_date).days + 1):
             date = start_date + datetime.timedelta(i)
