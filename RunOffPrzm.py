@@ -23,6 +23,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.1", "2025-12-11"),
         base.VersionInfo("2.1.0", "2022-01-05"),
         base.VersionInfo("2.0.13", "2021-12-30"),
         base.VersionInfo("2.0.12", "2021-10-22"),
@@ -125,6 +126,11 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.0.12", "Replaced GDAL constants by numerical values")
     VERSION.changed("2.0.13", "Output scale order (y,x,t instead of t,x,y)")
     VERSION.changed("2.1.0", "Updated module to version 1.47")
+    VERSION.changed("2.1.0", "Updated module to version 1.47")
+    VERSION.added("2.1.1", "Default value to exposure output array initialization")
+    VERSION.added("2.1.1", "Documentation of repository information")
+    VERSION.changed("2.1.1", "Module metadata")
+    VERSION.changed("2.1.1", "Switched to strict indexing of weather inputs")
 
     def __init__(self, name, observer, store):
         """
