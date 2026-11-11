@@ -346,12 +346,15 @@ The substance-specific PRZM foliar wash-off coefficient.
 Values have to refer to the `global` scale.
 The physical unit of the `Substance_FoliarWashOffCoefficient` input values is `1/cm`.
 
-#### DispersionCoefficient
+#### Substance_HenryConstant
 
-The dispersion coefficient.
-`DispersionCoefficient` expects its values to be of type `float`.
+The substance-specific Henry constant. You can also set this input to the special value of `nan` to let the module
+derive the Henry constant from the input values of [Substance_VapourPressure](#Substance_VapourPressure),
+[Substance_MolecularWeight](#Substance_MolecularWeight),  [Substance_WaterSolubility](#Substance_WaterSolubility) and
+[Substance_TemperatureAtWhichMeasured](#Substance_TemperatureAtWhichMeasured).
+`Substance_HenryConstant` expects its values to be of type `float`.
 Values have to refer to the `global` scale.
-The physical unit of the `DispersionCoefficient` input values is `cm²/d`.
+The physical unit of the `Substance_HenryConstant` input values is `1`.
 
 #### Substance_VapourPressure
 
