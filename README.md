@@ -24,7 +24,7 @@ have an arbitrarily coarser resolution. `RunOffPrzm` simulates filtering between
 the FOCUS curve number technique or a
 [vegetative filter strip model](https://abe.ufl.edu/faculty/carpena/vfsmod/index.shtml) (VfsMOD).  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2025-12-11.
+version of this document is from 2026-11-11.
 
 ### Built with
 
@@ -69,8 +69,8 @@ scales="global">true</Model_SoilTemperatureSimulation>
 scales="global">
     0.5
   </Substance_FoliarWashOffCoefficient>
-  <Substance_HenryConstant type="float" unit="1"
-scales="global">0.03</Substance_HenryConstant>
+  <DispersionCoefficient type="float" unit="cm&#178;/d"
+scales="global">0.03</DispersionCoefficient>
   <Substance_VapourPressure type="float" unit="mPa"
 scales="global">0.0001</Substance_VapourPressure>
   <Substance_MolecularWeight type="float" unit="g/mol"
@@ -346,15 +346,12 @@ The substance-specific PRZM foliar wash-off coefficient.
 Values have to refer to the `global` scale.
 The physical unit of the `Substance_FoliarWashOffCoefficient` input values is `1/cm`.
 
-#### Substance_HenryConstant
+#### DispersionCoefficient
 
-The substance-specific Henry constant. You can also set this input to the special value of `nan` to let the module
-derive the Henry constant from the input values of [Substance_VapourPressure](#Substance_VapourPressure),
-[Substance_MolecularWeight](#Substance_MolecularWeight),  [Substance_WaterSolubility](#Substance_WaterSolubility) and
-[Substance_TemperatureAtWhichMeasured](#Substance_TemperatureAtWhichMeasured).
-`Substance_HenryConstant` expects its values to be of type `float`.
+The dispersion coefficient.
+`DispersionCoefficient` expects its values to be of type `float`.
 Values have to refer to the `global` scale.
-The physical unit of the `Substance_HenryConstant` input values is `1`.
+The physical unit of the `DispersionCoefficient` input values is `cm²/d`.
 
 #### Substance_VapourPressure
 

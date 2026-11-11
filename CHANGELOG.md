@@ -1,6 +1,16 @@
 # Changelog
 
-This is the changelog for the RunOffPrzm component. It was automatically created on 2025-12-11.
+This is the changelog for the RunOffPrzm component. It was automatically created on 2026-11-11.
+
+## [2.1.2] - 2026-11-11
+
+### Added
+
+### Changed
+
+### Fixed
+
+- Dispersion coefficient parameter name
 
 ## [2.1.1] - 2025-12-11
 
