@@ -23,6 +23,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.3", "2026-11-11"),
         base.VersionInfo("2.1.2", "2026-11-11"),
         base.VersionInfo("2.1.1", "2025-12-11"),
         base.VersionInfo("2.1.0", "2022-01-05"),
@@ -133,6 +134,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.1.1", "Module metadata")
     VERSION.changed("2.1.1", "Switched to strict indexing of weather inputs")
     VERSION.fixed("2.1.2", "Dispersion coefficient parameter name")
+    VERSION.fixed("2.1.3", "Reversed the changes of 2.1.2")
 
     def __init__(self, name, observer, store):
         """
