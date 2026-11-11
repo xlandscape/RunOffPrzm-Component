@@ -23,6 +23,7 @@ class RunOffPrzm(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.3", "2026-11-11"),
         base.VersionInfo("2.1.2", "2026-11-11"),
         base.VersionInfo("2.1.1", "2025-12-11"),
         base.VersionInfo("2.1.0", "2022-01-05"),
@@ -133,6 +134,7 @@ class RunOffPrzm(base.Component):
     VERSION.changed("2.1.1", "Module metadata")
     VERSION.changed("2.1.1", "Switched to strict indexing of weather inputs")
     VERSION.fixed("2.1.2", "Dispersion coefficient parameter name")
+    VERSION.fixed("2.1.3", "Reversed the changes of 2.1.2")
 
     def __init__(self, name, observer, store):
         """
@@ -206,10 +208,15 @@ class RunOffPrzm(base.Component):
                 description="The substance-specific PRZM foliar wash-off coefficient."
             ),
             base.Input(
-                "DispersionCoefficient",
-                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("cm²/d")),
+                "Substance_HenryConstant",
+                (attrib.Class(float), attrib.Scales("global"), attrib.Unit("1")),
                 self.default_observer,
-                description="The dispersion coefficient."
+                description="""The substance-specific Henry constant. You can also set this input to the special value
+                of `nan` to let the module derive the Henry constant from the input values of
+                [Substance_VapourPressure](#Substance_VapourPressure),
+                [Substance_MolecularWeight](#Substance_MolecularWeight), 
+                [Substance_WaterSolubility](#Substance_WaterSolubility) and 
+                [Substance_TemperatureAtWhichMeasured](#Substance_TemperatureAtWhichMeasured)."""
             ),
             base.Input(
                 "Substance_VapourPressure",
@@ -811,7 +818,7 @@ class RunOffPrzm(base.Component):
         """
         parameters = xml.etree.ElementTree.Element("parameters")
         model = xml.etree.ElementTree.SubElement(parameters, "model")
-        dispersion_coefficient = self.inputs["DispersionCoefficient"].read().values
+        henry_constant = self.inputs["Substance_HenryConstant"].read().values
         xml.etree.ElementTree.SubElement(model, "adsorption_method").text = {
             "linear": "1", "Freundlich": "2", "aged": "3"}[self.inputs["Model_AdsorptionMethod"].read().values]
         xml.etree.ElementTree.SubElement(model, "soil_temperature_simulation").text = "2" if self.inputs[
@@ -825,7 +832,8 @@ class RunOffPrzm(base.Component):
             "Substance_PesticideDissipationRateOfFoliage"].read().values)
         xml.etree.ElementTree.SubElement(substance, "foliar_wash_off_coefficient").text = str(self.inputs[
             "Substance_FoliarWashOffCoefficient"].read().values)
-        xml.etree.ElementTree.SubElement(substance, "henry_constant").text = str(dispersion_coefficient)
+        if not math.isnan(henry_constant):
+            xml.etree.ElementTree.SubElement(substance, "henry_constant").text = str(henry_constant)
         xml.etree.ElementTree.SubElement(substance, "vapour_pressure").text = str(self.inputs[
             "Substance_VapourPressure"].read().values)
         xml.etree.ElementTree.SubElement(substance, "molecular_weight").text = str(self.inputs[
